@@ -42,6 +42,7 @@ dependencies:
   equatable: 
   hive: 
   hive_flutter: 
+  flex_color_scheme:
 
 dev_dependencies:
   flutter_test:
