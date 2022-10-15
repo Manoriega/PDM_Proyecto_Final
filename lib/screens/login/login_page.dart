@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokimon/screens/home/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -35,7 +36,10 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 MaterialButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => HomePage()));
+                  },
                   color: Theme.of(context).primaryColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pokimon/screens/catch/catch_page.dart';
+import 'package:pokimon/screens/combat/combat_page.dart';
+import 'package:pokimon/screens/garden/garden_page.dart';
 import 'package:pokimon/screens/settings/settings_page.dart';
+import 'package:pokimon/screens/team/team_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,23 +17,23 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Welcome!"),
+          title: const Text("Welcome!"),
         ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(
+                const Text(
                   "Pokimon Game",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 35),
                 ),
-                navigationButton(context, SettingsPage(), "Combat"),
-                navigationButton(context, SettingsPage(), "Catch"),
-                navigationButton(context, SettingsPage(), "Team"),
-                navigationButton(context, SettingsPage(), "Garden"),
-                navigationButton(context, SettingsPage(), "Settings"),
+                navigationButton(context, const CombatPage(), "Combat"),
+                navigationButton(context, const CatchPage(), "Catch"),
+                navigationButton(context, const TeamPage(), "Team"),
+                navigationButton(context, const GardenPage(), "Garden"),
+                navigationButton(context, const SettingsPage(), "Settings"),
               ],
             ),
           ),
@@ -38,7 +42,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget navigationButton(BuildContext context, Widget screen, String label) {
     return Container(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: MaterialButton(
         color: Theme.of(context).buttonTheme.colorScheme?.primary,
         onPressed: () {
