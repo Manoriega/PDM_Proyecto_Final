@@ -1,0 +1,52 @@
+{
+    "pokemones": [
+        {
+        "pokemonname":"pikachu",
+        "species":"mouse pokemon",
+        "type":"electric",
+        "height":"0.4m",
+        "weight":"6.0kg",
+        "imageurl":"assets/spr_frlg_025.png",
+        "stats":
+            {
+                "hp":35,
+                "attack":55,
+                "defense":40,
+                "speed":90
+
+            }
+        },
+        {
+            "pokemonname":"vaporeon",
+        "species":"Bubble jet pokemon",
+        "type":"water",
+        "height":"1.0m",
+        "weight":"29.0kg",
+        "imageurl":"assets/spr_frlg_134.png",
+        "stats":
+            {
+                "hp":130,
+                "attack":65,
+                "defense":60,
+                "speed":65
+
+            }
+        },
+        {
+            "pokemonname":"Charizard",
+            "species":"flame pokemon",
+            "type":"fire",
+            "height":"1.7m",
+            "weight":"90.5kg",
+            "imageurl":"assets/spr_frlg_006.png",
+            "stats":
+                {
+                    "hp":78,
+                    "attack":109,
+                    "defense":78,
+                    "speed":100
+    
+                }
+        }
+    ]
+}

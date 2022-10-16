@@ -21,9 +21,9 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Login",
-              style: Theme.of(context).textTheme.headline2,
+            Image.asset(
+              "assets/LOGIN THING.png",
+              color: Theme.of(context).primaryColor,
             ),
             Text("Please sign in to continue"),
             iconInput(context, Icons.account_box_rounded, "Username",
