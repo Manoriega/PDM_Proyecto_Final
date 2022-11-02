@@ -24,19 +24,11 @@ class _GardenPageState extends State<GardenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Garden",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-        ),
-        body: GridView.count(
-          crossAxisCount: 2,
-          children: List.generate(Pokemonlist.length, (index) {
-            return (PokemonWidget(aPokemon: Pokemonlist[index]));
-          }),
-        ));
+    return GridView.count(
+      crossAxisCount: 2,
+      children: List.generate(Pokemonlist.length, (index) {
+        return (PokemonWidget(aPokemon: Pokemonlist[index]));
+      }),
+    );
   }
 }

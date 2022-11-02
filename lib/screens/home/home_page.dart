@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pokimon/screens/MainPage.dart';
+import 'package:pokimon/screens/catch/CapturePage.dart';
 import 'package:pokimon/screens/catch/catch_page.dart';
 import 'package:pokimon/screens/combat/combat_page.dart';
 import 'package:pokimon/screens/garden/garden_page.dart';
@@ -6,50 +8,79 @@ import 'package:pokimon/screens/settings/settings_page.dart';
 import 'package:pokimon/screens/team/team_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  int _currentPageIndex = 0;
+
+  final _pagesNameList = [
+    "Main Page",
+    "capture",
+    "Pokemons",
+  ];
+
+  final _pagesList = [
+    MainPage(),
+    capturePage(),
+    GardenPage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Welcome!"),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text(
+          _pagesNameList[_currentPageIndex],
+          style: Theme.of(context).textTheme.headline1,
         ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                const Text(
-                  "Pokimon Game",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 35),
-                ),
-                navigationButton(context, const CombatPage(), "Combat"),
-                navigationButton(context, const CatchPage(), "Catch"),
-                navigationButton(context, const TeamPage(), "Team"),
-                navigationButton(context, const GardenPage(), "Garden"),
-                navigationButton(context, const SettingsPage(), "Settings"),
-              ],
+        actions: [
+          IconButton(
+            color: Theme.of(context).colorScheme.onPrimary,
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => SettingsPage(),
+              ));
+              // TODO:auth signout
+            },
+            icon: Icon(
+              Icons.settings,
+              size: 40,
             ),
           ),
-        ));
-  }
-
-  Widget navigationButton(BuildContext context, Widget screen, String label) {
-    return Container(
-      margin: const EdgeInsets.all(8.0),
-      child: MaterialButton(
-        color: Theme.of(context).buttonTheme.colorScheme?.primary,
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => screen));
+        ],
+      ),
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: _pagesList,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        fixedColor: Theme.of(context).colorScheme.secondary,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentPageIndex,
+        onTap: (index) {
+          setState(() {
+            _currentPageIndex = index;
+          });
         },
-        child: Text(label),
+        items: [
+          BottomNavigationBarItem(
+            label: _pagesNameList[0],
+            icon: Icon(Icons.home),
+          ),
+          BottomNavigationBarItem(
+            label: _pagesNameList[1],
+            icon: ImageIcon(AssetImage("assets/pokemonCaptureAdd.png")),
+          ),
+          BottomNavigationBarItem(
+            label: _pagesNameList[2],
+            icon: ImageIcon(AssetImage('assets/pokeballs.png')),
+          ),
+        ],
       ),
     );
   }

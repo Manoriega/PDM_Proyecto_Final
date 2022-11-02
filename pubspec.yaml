@@ -44,6 +44,8 @@ dependencies:
   hive_flutter: 
   percent_indicator: 
   flex_color_scheme:
+  google_fonts: ^3.0.1
+
 
 dev_dependencies:
   flutter_test:
