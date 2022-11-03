@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+import 'package:pokimon/components/error_text.dart';
+import 'package:pokimon/components/input.dart';
+
+class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({super.key});
+
+  @override
+  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+}
+
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  var lastPasswordController = TextEditingController(),
+      newPasswordController = TextEditingController(),
+      validatePasswordController = TextEditingController(),
+      lastPasswordErrors = "",
+      newPasswordErrors = "",
+      validatePasswordErrors = "",
+      checkErrors = "",
+      formErrors = "",
+      acceptChange = false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Cambiar contraseña'),
+      ),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "Cambia tu contraseña",
+            style: Theme.of(context).textTheme.headline4,
+          ),
+          Input(context, true, false, false, lastPasswordController,
+              "Antigua contraseña", lastPasswordErrors),
+          Input(context, true, false, false, newPasswordController,
+              "Nueva contraseña", newPasswordErrors),
+          Input(context, true, false, false, validatePasswordController,
+              "Ingresa de nuevo la contraseña", validatePasswordErrors),
+          ListTile(
+            title: Text("Aceptas cambiar tu contraseña?"),
+            leading: Checkbox(
+                value: acceptChange,
+                onChanged: (value) => setState(() {
+                      acceptChange = value!;
+                    })),
+          ),
+          ErrorText(checkErrors, context),
+          ErrorText(formErrors, context),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                MaterialButton(
+                    onPressed: () => submitPassord(
+                        lastPasswordController.text,
+                        newPasswordController.text,
+                        validatePasswordController.text,
+                        acceptChange),
+                    color: Theme.of(context).primaryColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Cambiar Contraseña",
+                        style: TextStyle(fontSize: 30),
+                      ),
+                    )),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  submitPassord(String lastPassword, String newPassword,
+      String validatePassword, bool acceptChange) {
+    checkErrors = "";
+    lastPasswordErrors = "";
+    newPasswordErrors = "";
+    validatePasswordErrors = "";
+    if (acceptChange == false) {
+      checkErrors += "Debes aceptar para cambiar tu contraseña. ";
+    }
+    if (lastPassword == "") {
+      lastPasswordErrors += "Password is required. ";
+    }
+    if (newPassword == "") {
+      newPasswordErrors += "Password is required. ";
+    }
+    if (validatePassword == "") {
+      validatePasswordErrors += "Password is required. ";
+    }
+    if (validatePassword != newPassword) {
+      validatePasswordErrors += "No coincide tu nueva contraseña. ";
+    }
+    setState(() {});
+  }
+}
