@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pokimon/themes/provider/themes_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../classes/Pokemon.dart';
 
@@ -17,124 +19,43 @@ class _MyAppState extends State<PokemonDetails> {
   @override
   Widget build(BuildContext context) {
     List<Tab> tabs = <Tab>[
-      Tab(text: 'Info'),
+      Tab(
+        text: 'Info',
+      ),
       Tab(text: 'Stats'),
     ];
     late MaterialColor PKcolor = widget.pokemon.pokemoncolor as MaterialColor;
     List<Widget> _views = [
       Container(
-        color: Colors.white,
+        color: (context.read<ColorSchemeProvider>().isDark == true)
+            ? Colors.black
+            : Colors.white,
         height: 50,
         margin: EdgeInsets.all(1),
         alignment: Alignment.topLeft,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text("Species ",
-                    textAlign: TextAlign.start,
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                Text(" ${widget.pokemon.species}",
-                    overflow: TextOverflow.clip,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(fontSize: 20)),
-              ],
-            ),
-            Row(
-              children: [
-                Text("Height  ",
-                    textAlign: TextAlign.left,
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                Text("${widget.pokemon.height}  ",
-                    textAlign: TextAlign.left, style: TextStyle(fontSize: 20)),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  "Weight  ",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "${widget.pokemon.weight}",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
-              ],
-            ),
+            PokemonRow(context, "Species  ", " ${widget.pokemon.species}"),
+            PokemonRow(context, "Height ", "${widget.pokemon.height}  "),
+            PokemonRow(context, "Weight ", "${widget.pokemon.weight}  ")
           ],
         ),
       ),
       Container(
-        color: Colors.white,
+        color: (context.read<ColorSchemeProvider>().isDark == true)
+            ? Colors.black
+            : Colors.white,
         height: 50,
         margin: EdgeInsets.all(1),
         alignment: Alignment.topLeft,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(
-                  'HP  ',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
-                ),
-                Text(
-                  '${widget.pokemon.HP}',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  'ATTACK  ',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
-                ),
-                Text(
-                  '${widget.pokemon.Attack}',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  'Defense  ',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
-                ),
-                Text(
-                  '${widget.pokemon.defense}',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  'Speed  ',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
-                ),
-                Text(
-                  '${widget.pokemon.Speed}',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
-                ),
-              ],
-            ),
+            PokemonRow(context, "HP ", "${widget.pokemon.HP}"),
+            PokemonRow(context, "ATTACK ", "${widget.pokemon.Attack}"),
+            PokemonRow(context, "DEFENSE  ", "${widget.pokemon.defense}"),
+            PokemonRow(context, "SPEED  ", "${widget.pokemon.Speed}")
           ],
         ),
       ),
@@ -160,8 +81,7 @@ class _MyAppState extends State<PokemonDetails> {
                     tileColor: PKcolor[700],
                     leading: Text(
                       "${widget.pokemon.name}",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      style: Theme.of(context).textTheme.headline1,
                     ),
                   ),
                   Expanded(
@@ -178,13 +98,19 @@ class _MyAppState extends State<PokemonDetails> {
                   Material(
                     color: PKcolor[300],
                     child: TabBar(
-                      labelColor: Colors.black,
+                      labelColor:
+                          (context.read<ColorSchemeProvider>().isDark == true)
+                              ? Colors.white
+                              : Colors.black,
                       unselectedLabelColor: Colors.white,
                       indicator: BoxDecoration(
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10),
                               topRight: Radius.circular(10)),
-                          color: Colors.white),
+                          color: (context.read<ColorSchemeProvider>().isDark ==
+                                  true)
+                              ? Colors.black
+                              : Colors.white),
                       tabs: tabs,
                     ),
                   ),
@@ -207,7 +133,7 @@ class _MyAppState extends State<PokemonDetails> {
                             ),
                             label: Text(
                               "Add to team",
-                              style: TextStyle(fontSize: 20),
+                              style: Theme.of(context).textTheme.subtitle2,
                             )),
                       ),
                     ],
@@ -216,6 +142,20 @@ class _MyAppState extends State<PokemonDetails> {
               )),
         );
       }),
+    );
+  }
+
+  Row PokemonRow(BuildContext context, String Stat, String actualstat) {
+    return Row(
+      children: [
+        Text(Stat,
+            textAlign: TextAlign.start,
+            style: Theme.of(context).textTheme.subtitle2),
+        Text(actualstat,
+            overflow: TextOverflow.clip,
+            textAlign: TextAlign.start,
+            style: Theme.of(context).textTheme.subtitle1),
+      ],
     );
   }
 }
