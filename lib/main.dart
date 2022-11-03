@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pokimon/models/themes/theme.dart';
 import 'package:pokimon/screens/home/home_page.dart';
@@ -55,10 +57,48 @@ class MyApp extends StatelessWidget {
           title: 'Material App',
           theme: FlexThemeData.light(
               colors: theme.currentFlexSchemeData.light,
-              appBarBackground: theme.currentFlexSchemeData.light.appBarColor),
+              appBarBackground: theme.currentFlexSchemeData.light.appBarColor,
+              textTheme: TextTheme(
+                  headline1: GoogleFonts.kanit(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.25),
+                  headline3: GoogleFonts.kanit(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.50),
+                  headline2: GoogleFonts.rubik(
+                    fontSize: 34,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  subtitle1: GoogleFonts.manrope(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                      letterSpacing: 0.15),
+                  subtitle2: GoogleFonts.arimo(
+                      fontSize: 22, fontWeight: FontWeight.bold))),
           darkTheme: FlexThemeData.dark(
               colors: theme.currentFlexSchemeData.dark,
-              appBarBackground: theme.currentFlexSchemeData.dark.appBarColor),
+              appBarBackground: theme.currentFlexSchemeData.dark.appBarColor,
+              textTheme: TextTheme(
+                  headline1: GoogleFonts.kanit(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.25),
+                  headline3: GoogleFonts.kanit(
+                      fontSize: 34,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.50),
+                  headline2: GoogleFonts.rubik(
+                    fontSize: 34,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  subtitle1: GoogleFonts.manrope(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                      letterSpacing: 0.15),
+                  subtitle2: GoogleFonts.arimo(
+                      fontSize: 22, fontWeight: FontWeight.bold))),
           themeMode: theme.currentThemeMode,
           home: FirebaseAuth.instance.currentUser == null
               ? SignInPage()

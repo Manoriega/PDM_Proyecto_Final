@@ -29,7 +29,7 @@ class _TeamPageState extends State<TeamPage> {
           title: Text(
             "Team",
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: Theme.of(context).textTheme.headline3,
           ),
         ),
         body: GridView.count(

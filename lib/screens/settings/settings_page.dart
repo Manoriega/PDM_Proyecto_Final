@@ -31,7 +31,11 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text(
+          'Settings',
+          style: Theme.of(context).textTheme.headline1,
+        ),
       ),
       body: Column(
         children: [
@@ -58,9 +62,8 @@ class _SettingsPageState extends State<SettingsPage> {
               Theme.of(context).backgroundColor),
           widgetUnderlined(
               ListTile(
-                leading: const Text(
-                  "Dark Mode?",
-                ),
+                leading: Text("Dark Mode?",
+                    style: Theme.of(context).textTheme.subtitle1),
                 trailing: Switch(
                   value: isDark!,
                   onChanged: (value) {
@@ -116,7 +119,7 @@ class _SettingsPageState extends State<SettingsPage> {
           onTap: function,
           leading: Text(
             title,
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.subtitle1,
           ),
           trailing: Icon(
             Icons.arrow_forward,
@@ -146,7 +149,7 @@ class _SettingsPageState extends State<SettingsPage> {
           iconColor: Theme.of(context).iconTheme.color,
           title: Text(
             title,
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headline2,
           ),
           leading: Icon(
             icon,

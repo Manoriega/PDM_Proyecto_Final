@@ -37,7 +37,7 @@ class PokemonWidget extends StatelessWidget {
                   left: 0,
                   child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.blue[600],
+                          color: Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(8),
                               bottomRight: Radius.circular(8))),
@@ -51,7 +51,7 @@ class PokemonWidget extends StatelessWidget {
                             ),
                             Text(
                               "${aPokemon.name}",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: Theme.of(context).textTheme.subtitle2,
                             )
                           ])),
                 )
