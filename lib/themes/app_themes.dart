@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 enum AppTheme { PurpleBrown, MandyRed, Amber, Wasabi, VesuviusBurn }
 
 final appThemeData = {
-  AppTheme.PurpleBrown: FlexColor.redWine,
+  AppTheme.PurpleBrown: FlexColor.damask,
   AppTheme.MandyRed: FlexColor.bigStone,
   AppTheme.Amber: FlexColor.amber,
-  AppTheme.Wasabi: FlexColor.dellGenoa,
+  AppTheme.Wasabi: FlexColor.green,
   AppTheme.VesuviusBurn: FlexColor.vesuviusBurn,
 };

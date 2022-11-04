@@ -8,6 +8,7 @@ import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 import 'package:pokimon/themes/app_themes.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
+import 'package:pokimon/utils/TextStyles.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -46,47 +47,11 @@ class MyApp extends StatelessWidget {
           theme: FlexThemeData.light(
               colors: theme.currentFlexSchemeData.light,
               appBarBackground: theme.currentFlexSchemeData.light.appBarColor,
-              textTheme: TextTheme(
-                  headline1: GoogleFonts.kanit(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.25),
-                  headline3: GoogleFonts.kanit(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.50),
-                  headline2: GoogleFonts.rubik(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  subtitle1: GoogleFonts.manrope(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.15),
-                  subtitle2: GoogleFonts.arimo(
-                      fontSize: 22, fontWeight: FontWeight.bold))),
+              textTheme: PokemonTheme),
           darkTheme: FlexThemeData.dark(
               colors: theme.currentFlexSchemeData.dark,
               appBarBackground: theme.currentFlexSchemeData.dark.appBarColor,
-              textTheme: TextTheme(
-                  headline1: GoogleFonts.kanit(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.25),
-                  headline3: GoogleFonts.kanit(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.50),
-                  headline2: GoogleFonts.rubik(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  subtitle1: GoogleFonts.manrope(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.15),
-                  subtitle2: GoogleFonts.arimo(
-                      fontSize: 22, fontWeight: FontWeight.bold))),
+              textTheme: PokemonTheme),
           themeMode: theme.currentThemeMode,
           home: const LoginPage());
     }));

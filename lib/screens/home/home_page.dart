@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.secondary,
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => SettingsPage(),
