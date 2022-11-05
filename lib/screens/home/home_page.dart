@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokimon/screens/MainPage.dart';
 import 'package:pokimon/screens/catch/CapturePage.dart';
 import 'package:pokimon/screens/catch/catch_page.dart';
+import 'package:pokimon/screens/combat/CombatMainPage.dart';
 import 'package:pokimon/screens/combat/combat_page.dart';
 import 'package:pokimon/screens/garden/garden_page.dart';
 import 'package:pokimon/screens/settings/settings_page.dart';
@@ -17,16 +18,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentPageIndex = 0;
 
-  final _pagesNameList = [
-    "Main Page",
-    "capture",
-    "Pokemons",
-  ];
+  final _pagesNameList = ["Main Page", "capture", "Pokemons", "Combat"];
 
   final _pagesList = [
     MainPage(),
     capturePage(),
     GardenPage(),
+    CombatMainPage()
   ];
 
   @override
@@ -79,6 +77,10 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             label: _pagesNameList[2],
             icon: ImageIcon(AssetImage('assets/pokeballs.png')),
+          ),
+          BottomNavigationBarItem(
+            label: _pagesNameList[3],
+            icon: ImageIcon(AssetImage('assets/pokemoncombaticon.png')),
           ),
         ],
       ),
