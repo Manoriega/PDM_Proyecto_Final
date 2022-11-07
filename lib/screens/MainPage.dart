@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pokimon/screens/catch/CapturePage.dart';
+import 'package:pokimon/screens/catch/catch_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokimon/screens/store/store_page.dart';
 import 'package:pokimon/screens/team/bloc/team_bloc.dart';
@@ -22,96 +24,75 @@ class MainPage extends StatelessWidget {
             : Colors.white,
         child: Stack(
           children: [
-            Expanded(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => StorePage()));
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      stops: [.5, .5],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Colors.transparent, // top Right part
+            Positioned(
+              child: ClipPath(
+                clipper: CustomClipPath(),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => CatchPage()));
+                  },
+                  child: Container(
+                    width: 390,
+                    height: MediaQuery.of(context).size.height,
+                    color: Theme.of(context).colorScheme.secondary,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 350, right: 150),
+                          child: ImageIcon(
+                            AssetImage(
+                              'assets/new.png',
+                            ),
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 170,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 150),
+                          child: Text(
+                            "STORE",
+                            style: Theme.of(context).textTheme.headline1,
+                          ),
+                        )
                       ],
                     ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SizedBox(
-                        height: 400,
-                        width: 200,
-                      ),
-                      ImageIcon(
-                        AssetImage(
-                          'assets/new.png',
-                        ),
-                        color: Theme.of(context).colorScheme.secondary,
-                        size: 150,
-                      ),
-                      Text(
-                        "STORE",
-                        style: Theme.of(context).textTheme.headline1,
-                      )
-                    ],
                   ),
                 ),
               ),
             ),
-            Expanded(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  BlocProvider.of<TeamBloc>(context).add(ResetMyTeamEvent());
-                  BlocProvider.of<TeamBloc>(context).add(GetMyTeamEvent());
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => TeamPage()));
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height - 150,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
+            Positioned(
+              left: 7,
+              child: ClipPath(
+                clipper: TriangleMask(),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => TeamPage()));
+                  },
+                  child: Container(
+                      width: 400,
+                      height: MediaQuery.of(context).size.height - 110,
+                      color: Theme.of(context).colorScheme.secondary,
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        Text(
                           "TEAM",
-                          textAlign: TextAlign.right,
                           style: Theme.of(context).textTheme.headline1,
                         ),
-                      ),
-                      Stack(
-                        children: [
-                          Image.asset(
+                        Padding(
+                          padding: EdgeInsets.only(left: 80),
+                          child: Image.asset(
                             'assets/teampokemons.png',
-                            fit: BoxFit.contain,
-                            width: MediaQuery.of(context).size.width,
-                            height: 280,
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      stops: [.5, .5],
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Colors.transparent, // top Right part
-                      ],
-                    ),
-                  ),
+                            fit: BoxFit.fill,
+                            width: 300,
+                            height: 300,
+                          ),
+                        ),
+                      ])),
                 ),
               ),
             ),
@@ -120,4 +101,36 @@ class MainPage extends StatelessWidget {
       ),
     );
   }
+}
+
+class CustomClipPath extends CustomClipper<Path> {
+  var radius = 5.0;
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    path.lineTo(0.0, size.height);
+    path.lineTo(size.width, size.height);
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class TriangleMask extends CustomClipper<Path> {
+  var radius = 5.0;
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    path.lineTo(size.width, size.height);
+    path.lineTo(size.width, 0.0);
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

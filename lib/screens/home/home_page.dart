@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pokimon/screens/MainPage.dart';
 import 'package:pokimon/screens/catch/CapturePage.dart';
 import 'package:pokimon/screens/catch/catch_page.dart';
-import 'package:pokimon/screens/combat/choose_combat.dart';
+import 'package:pokimon/screens/combat/CombatMainPage.dart';
 import 'package:pokimon/screens/combat/combat_page.dart';
 import 'package:pokimon/screens/garden/garden_page.dart';
 import 'package:pokimon/screens/settings/settings_page.dart';
@@ -21,8 +21,12 @@ class _HomePageState extends State<HomePage> {
   int _currentPageIndex = 0;
 
   final _pagesNameList = ["Main Page", "capture", "Pokemons", "Combat"];
-
-  final _pagesList = [MainPage(), CapturePage(), GardenPage(), ChooseCombat()];
+  final _pagesList = [
+    MainPage(),
+    capturePage(),
+    GardenPage(),
+    CombatMainPage()
+  ];  
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.secondary,
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => SettingsPage(),
@@ -76,7 +80,7 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             label: _pagesNameList[3],
-            icon: Icon(Icons.catching_pokemon),
+            icon: ImageIcon(AssetImage('assets/pokemoncombaticon.png')),
           ),
         ],
       ),
