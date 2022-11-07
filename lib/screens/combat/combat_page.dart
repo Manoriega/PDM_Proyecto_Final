@@ -84,16 +84,14 @@ class _CombatPageState extends State<CombatPage> {
                         ),
                       ),
                       Container(
-                        height: screenHeight * .2,
-                        width: MediaQuery.of(context).size.width,
-                        alignment: Alignment.bottomRight,
-                        child: /* Image.asset(
-                            "assets/images/spr_frlg_004.png",
+                          height: screenHeight * .2,
+                          width: MediaQuery.of(context).size.width,
+                          alignment: Alignment.bottomRight,
+                          child: Image.network(
+                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
                             width: MediaQuery.of(context).size.width / 2,
                             fit: BoxFit.contain,
-                          ) */
-                            Text(""),
-                      ),
+                          )),
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Container(
@@ -147,12 +145,11 @@ class _CombatPageState extends State<CombatPage> {
                         height: screenHeight * .2,
                         width: MediaQuery.of(context).size.width,
                         alignment: Alignment.bottomLeft,
-                        child: /* Image.asset(
-                            "assets/images/b_frlg_001.png",
-                            width: MediaQuery.of(context).size.width / 2,
-                            fit: BoxFit.contain,
-                          ) */
-                            Text(""),
+                        child: Image.network(
+                          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/1.png",
+                          width: MediaQuery.of(context).size.width / 2,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                       Container(
                         height: screenHeight * .32,

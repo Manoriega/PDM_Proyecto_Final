@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokimon/screens/combat/combat_page.dart';
 import 'package:provider/provider.dart';
 import 'package:rotated_corner_decoration/rotated_corner_decoration.dart';
 
@@ -47,7 +48,11 @@ class CombatMainPage extends StatelessWidget {
                 bottomLeft: Radius.circular(5),
                 bottomRight: Radius.circular(5.0)),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => CombatPage(),
+                ));
+              },
               child: Container(
                 color: Theme.of(context).colorScheme.primary,
                 foregroundDecoration: RotatedCornerDecoration(

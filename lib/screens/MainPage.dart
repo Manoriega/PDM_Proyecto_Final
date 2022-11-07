@@ -31,7 +31,7 @@ class MainPage extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => CatchPage()));
+                        MaterialPageRoute(builder: (context) => StorePage()));
                   },
                   child: Container(
                     width: 390,
@@ -71,6 +71,8 @@ class MainPage extends StatelessWidget {
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
+                    BlocProvider.of<TeamBloc>(context).add(ResetMyTeamEvent());
+                    BlocProvider.of<TeamBloc>(context).add(GetMyTeamEvent());
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => TeamPage()));
                   },

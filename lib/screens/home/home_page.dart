@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   final _pagesNameList = ["Main Page", "capture", "Pokemons", "Combat"];
   final _pagesList = [
     MainPage(),
-    capturePage(),
+    CapturePage(),
     GardenPage(),
     CombatMainPage()
   ];  
