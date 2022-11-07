@@ -1,7 +1,10 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:pokimon/screens/MainPage.dart';
 import 'package:pokimon/screens/catch/CapturePage.dart';
 import 'package:pokimon/screens/catch/catch_page.dart';
+import 'package:pokimon/screens/combat/choose_combat.dart';
 import 'package:pokimon/screens/combat/combat_page.dart';
 import 'package:pokimon/screens/garden/garden_page.dart';
 import 'package:pokimon/screens/settings/settings_page.dart';
@@ -17,17 +20,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentPageIndex = 0;
 
-  final _pagesNameList = [
-    "Main Page",
-    "capture",
-    "Pokemons",
-  ];
+  final _pagesNameList = ["Main Page", "capture", "Pokemons", "Combat"];
 
-  final _pagesList = [
-    MainPage(),
-    capturePage(),
-    GardenPage(),
-  ];
+  final _pagesList = [MainPage(), CapturePage(), GardenPage(), ChooseCombat()];
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +40,6 @@ class _HomePageState extends State<HomePage> {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => SettingsPage(),
               ));
-              // TODO:auth signout
             },
             icon: Icon(
               Icons.settings,
@@ -79,6 +73,10 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             label: _pagesNameList[2],
             icon: ImageIcon(AssetImage('assets/pokeballs.png')),
+          ),
+          BottomNavigationBarItem(
+            label: _pagesNameList[3],
+            icon: Icon(Icons.catching_pokemon),
           ),
         ],
       ),

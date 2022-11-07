@@ -32,13 +32,13 @@ class _MyAppState extends State<PokemonDetails> {
             : Colors.white,
         height: 50,
         margin: EdgeInsets.all(1),
-        alignment: Alignment.topLeft,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             PokemonRow(context, "Species  ", " ${widget.pokemon.species}"),
-            PokemonRow(context, "Height ", "${widget.pokemon.height}  "),
-            PokemonRow(context, "Weight ", "${widget.pokemon.weight}  ")
+            Text(widget.pokemon.description,
+                textAlign: TextAlign.start,
+                style: Theme.of(context).textTheme.subtitle1),
           ],
         ),
       ),
@@ -52,10 +52,14 @@ class _MyAppState extends State<PokemonDetails> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            PokemonRow(context, "HP ", "${widget.pokemon.HP}"),
-            PokemonRow(context, "ATTACK ", "${widget.pokemon.Attack}"),
-            PokemonRow(context, "DEFENSE  ", "${widget.pokemon.defense}"),
-            PokemonRow(context, "SPEED  ", "${widget.pokemon.Speed}")
+            PokemonRow(context, "HP ", "${widget.pokemon.hp}"),
+            PokemonRow(context, "ATTACK ", "${widget.pokemon.attack}"),
+            PokemonRow(context, "DEFENSE ", "${widget.pokemon.defense}"),
+            PokemonRow(
+                context, "SPECIAL ATTACK ", "${widget.pokemon.specialAttack}"),
+            PokemonRow(context, "SPECIAL DEFENSE ",
+                "${widget.pokemon.specialDefense}"),
+            PokemonRow(context, "SPEED ", "${widget.pokemon.speed}")
           ],
         ),
       ),
@@ -89,7 +93,7 @@ class _MyAppState extends State<PokemonDetails> {
                     child: Container(
                       height: 250,
                       child: Positioned.fill(
-                          child: Image.asset(
+                          child: Image.network(
                         '${widget.pokemon.imageurl}',
                         fit: BoxFit.fill,
                       )),

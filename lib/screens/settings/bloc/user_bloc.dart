@@ -14,7 +14,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetMyProfileEvent>(_getMyProfile);
     on<ResetProfileEvent>(_resetProfile);
   }
-
+ 
   FutureOr<void> _getMyProfile(
       GetMyProfileEvent event, Emitter<UserState> emit) async {
     emit(LoadingUserState());

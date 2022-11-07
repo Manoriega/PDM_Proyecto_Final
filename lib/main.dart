@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -6,12 +9,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pokimon/classes/Pokemon.dart';
+import 'package:pokimon/controllers/current_user.dart';
 import 'package:pokimon/models/themes/theme.dart';
+import 'package:pokimon/screens/combat/bloc/combat_bloc.dart';
 import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
 import 'package:pokimon/screens/signin/signin_page.dart';
+import 'package:pokimon/screens/team/bloc/team_bloc.dart';
 import 'package:pokimon/themes/app_themes.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
+import '../../../utils/secrets.dart' as SECRETS;
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -24,12 +33,19 @@ void main() async {
 
   runApp(MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => TeamBloc()),
         BlocProvider(
-          create: (context) => UserBloc()..add(GetMyProfileEvent()),
+          create: (context) => UserBloc(),
         ),
+        BlocProvider(create: (context) => CombatBloc()),
       ],
-      child: ChangeNotifierProvider(
-          create: (context) => ColorSchemeProvider(), child: const MyApp())));
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => ColorSchemeProvider()),
+          ChangeNotifierProvider(create: (context) => UserProvider())
+        ],
+        child: const MyApp(),
+      )));
 }
 
 class MyApp extends StatelessWidget {
@@ -102,17 +118,7 @@ class MyApp extends StatelessWidget {
           themeMode: theme.currentThemeMode,
           home: FirebaseAuth.instance.currentUser == null
               ? SignInPage()
-              : const HomePage());
+              : HomePage());
     }));
   }
 }
-
-/* MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => UserBloc(),
-        ),
-        BlocProvider(create: (context) => CreateBloc())
-      ],
-      child: ChangeNotifierProvider(
-      create: (context) => ColorSchemeProvider(), child: const MyApp()) */
