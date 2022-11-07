@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:pokimon/screens/MainPage.dart';
 import 'package:pokimon/screens/catch/CapturePage.dart';
@@ -19,13 +21,12 @@ class _HomePageState extends State<HomePage> {
   int _currentPageIndex = 0;
 
   final _pagesNameList = ["Main Page", "capture", "Pokemons", "Combat"];
-
   final _pagesList = [
     MainPage(),
     capturePage(),
     GardenPage(),
     CombatMainPage()
-  ];
+  ];  
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,6 @@ class _HomePageState extends State<HomePage> {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => SettingsPage(),
               ));
-              // TODO:auth signout
             },
             icon: Icon(
               Icons.settings,

@@ -27,7 +27,7 @@ class PokemonWidget extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned.fill(
-                    child: Image.asset(
+                    child: Image.network(
                   "${aPokemon.imageurl}",
                   fit: BoxFit.contain,
                 )),

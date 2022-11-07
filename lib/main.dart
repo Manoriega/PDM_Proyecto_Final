@@ -1,14 +1,27 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pokimon/classes/Pokemon.dart';
+import 'package:pokimon/controllers/current_user.dart';
 import 'package:pokimon/models/themes/theme.dart';
+import 'package:pokimon/screens/combat/bloc/combat_bloc.dart';
 import 'package:pokimon/screens/home/home_page.dart';
-import 'package:pokimon/screens/login/login_page.dart';
+import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
+import 'package:pokimon/screens/signin/signin_page.dart';
+import 'package:pokimon/screens/team/bloc/team_bloc.dart';
 import 'package:pokimon/themes/app_themes.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
 import 'package:pokimon/utils/TextStyles.dart';
+import '../../../utils/secrets.dart' as SECRETS;
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -17,8 +30,23 @@ void main() async {
   Hive.registerAdapter(ThemeHiveAdapter());
   await Hive.openBox<ThemeHive>('theme');
 
-  runApp(ChangeNotifierProvider(
-      create: (context) => ColorSchemeProvider(), child: const MyApp()));
+  await Firebase.initializeApp();
+
+  runApp(MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => TeamBloc()),
+        BlocProvider(
+          create: (context) => UserBloc(),
+        ),
+        BlocProvider(create: (context) => CombatBloc()),
+      ],
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => ColorSchemeProvider()),
+          ChangeNotifierProvider(create: (context) => UserProvider())
+        ],
+        child: const MyApp(),
+      )));
 }
 
 class MyApp extends StatelessWidget {
@@ -53,7 +81,9 @@ class MyApp extends StatelessWidget {
               appBarBackground: theme.currentFlexSchemeData.dark.appBarColor,
               textTheme: PokemonTheme),
           themeMode: theme.currentThemeMode,
-          home: const LoginPage());
+          home: FirebaseAuth.instance.currentUser == null
+              ? SignInPage()
+              : HomePage());
     }));
   }
 }

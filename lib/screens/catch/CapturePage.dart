@@ -5,14 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class capturePage extends StatefulWidget {
-  const capturePage({super.key});
+class CapturePage extends StatefulWidget {
+  const CapturePage({super.key});
 
   @override
-  State<capturePage> createState() => _capturePageState();
+  State<CapturePage> createState() => _CapturePageState();
 }
 
-class _capturePageState extends State<capturePage> {
+class _CapturePageState extends State<CapturePage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
   QRViewController? controller;
@@ -46,32 +46,8 @@ class _capturePageState extends State<capturePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Expanded(
-          flex: 5,
-          child: QRView(
-            key: qrKey,
-            onQRViewCreated: _onQRViewCreated,
-            overlay: QrScannerOverlayShape(
-              borderColor: Colors.orange,
-              borderRadius: 5,
-              borderLength: 5,
-              borderWidth: 5,
-              cutOutSize: MediaQuery.of(context).size.width * 0.8,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Center(
-            child: (result != null)
-                ? Text(
-                    'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
-                : Text('Scan a code'),
-          ),
-        )
-      ],
+    return Center(
+      child: Text("Capture"),
     );
   }
 }

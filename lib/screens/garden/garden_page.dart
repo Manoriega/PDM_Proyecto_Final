@@ -13,14 +13,7 @@ class GardenPage extends StatefulWidget {
 }
 
 class _GardenPageState extends State<GardenPage> {
-  List<Pokemon> Pokemonlist = [
-    Pokemon("Vaporeon", "Bubble Jet", "water", "1.0m", "29.0 kg",
-        "assets/spr_frlg_134.png", 130, 65, 60, 65, Colors.blue),
-    Pokemon("Charizard", "Flame", "Fire", "1.7m", "90.5 kg",
-        "assets/spr_frlg_006.png", 78, 84, 78, 100, Colors.deepOrange),
-    Pokemon("Pikachu", "Mouse", "Electric", "0.4m", "6.0 kg",
-        "assets/spr_frlg_025.png", 35, 55, 40, 90, Colors.amber),
-  ];
+  List<Pokemon> Pokemonlist = [];
 
   @override
   Widget build(BuildContext context) {
