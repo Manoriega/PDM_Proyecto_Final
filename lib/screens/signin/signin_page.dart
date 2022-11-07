@@ -3,21 +3,22 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pokimon/components/loading_screen.dart';
 import 'package:pokimon/screens/home/home_page.dart';
-import 'package:pokimon/screens/signin/signin_page.dart';
+import 'package:pokimon/screens/login/login_page.dart';
 import '../../utils/secrets.dart' as Secrets;
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignInPage> createState() => _SignInPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignInPageState extends State<SignInPage> {
   var emailController = TextEditingController(),
       passwordController = TextEditingController(),
       emailErrors = "",
@@ -44,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
               "assets/LOGIN THING.png",
               color: Theme.of(context).primaryColor,
             ),
-            Text("Please log in to continue"),
+            Text("Please sign in to continue"),
             Container(
               margin: EdgeInsets.only(top: 10),
               child: Column(
@@ -105,8 +106,8 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   MaterialButton(
-                    onPressed: () {
-                      logInWithMail(
+                    onPressed: () async {
+                      await signInWithEmail(
                           emailController.text, passwordController.text, users);
                     },
                     color: Theme.of(context).primaryColor,
@@ -116,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            "LOGIN",
+                            "SIGN IN",
                             style: TextStyle(fontSize: 30),
                           ),
                           Icon(
@@ -135,11 +136,11 @@ class _LoginPageState extends State<LoginPage> {
                   Navigator.pushReplacement<void, void>(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (BuildContext context) => const SignInPage(),
+                      builder: (BuildContext context) => const LoginPage(),
                     ),
                   );
                 },
-                child: Text("No tienes cuenta? Registrate aqui"))
+                child: Text("Ya tienes cuenta? Inicia sesion aqui"))
           ],
         ),
       ),
@@ -175,22 +176,15 @@ class _LoginPageState extends State<LoginPage> {
     return flag;
   }
 
-  Future<void> logInWithMail(
+  Future<void> signInWithEmail(
       String email, String password, CollectionReference users) async {
     if (validateCredentials(email, password) == true) {
       setState(() {
         isLoading = true;
       });
       await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password)
-          .then((user) => {
-                Navigator.pushReplacement<void, void>(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) => HomePage(),
-                  ),
-                )
-              })
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((user) => {createUser(users, user.user!.uid)})
           .catchError((e) => print(e));
     }
   }
@@ -198,12 +192,18 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> createUser(CollectionReference users, String userId) async {
     users.doc(userId).set(
       {
-        'username':
-            "TrainerMaster${next(0, 1000000)}x${next(0, 1000000)}${next(0, 1000000)}",
-        "createdAt": DateTime.now().millisecondsSinceEpoch,
+        'username': "TrainerMaster${next(0, 10)}x${next(0, 10)}${next(0, 10)}",
+        "createdAt": DateTime.now(),
         "trainerPoints": 0,
-        "battles": []
+        "battles": [],
+        "pokemons": []
       },
+    );
+    Navigator.pushReplacement<void, void>(
+      context,
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => HomePage(),
+      ),
     );
   }
 }

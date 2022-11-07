@@ -1,8 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokimon/controllers/boxes.dart';
 import 'package:pokimon/models/themes/theme.dart';
+import 'package:pokimon/screens/login/login_page.dart';
+import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
+import 'package:pokimon/screens/settings/components/changepassword_screen.dart';
+import 'package:pokimon/screens/settings/components/logout_dialog.dart';
+import 'package:pokimon/screens/settings/components/profile_screen.dart';
 import 'package:pokimon/themes/app_themes.dart';
+import 'package:pokimon/components/show_custom_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
 
@@ -32,9 +40,19 @@ class _SettingsPageState extends State<SettingsPage> {
       body: Column(
         children: [
           subConfigDivider(context, Icons.account_circle, "Account"),
-          settingNavigatorTab(context, "Change password"),
-          settingNavigatorTab(context, "Edit Profile Info"),
-          settingNavigatorTab(context, "Privacy"),
+          settingNavigatorTab(context, "Change password", () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ChangePasswordScreen()));
+          }),
+          settingNavigatorTab(context, "Profile Info", () {
+            BlocProvider.of<UserBloc>(context).add(ResetProfileEvent());
+            BlocProvider.of<UserBloc>(context).add(GetMyProfileEvent());
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+          }),
+          /* settingNavigatorTab(context, "Privacy", () {
+            print("Privacy");
+          }), */
           subConfigDivider(context, Icons.more, "More"),
           widgetUnderlined(
               Row(
@@ -58,18 +76,47 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
               ),
-              Theme.of(context).backgroundColor)
+              Theme.of(context).backgroundColor),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                MaterialButton(
+                  onPressed: () async {
+                    ShowCustomDialog(context, LogOutDialog());
+                  },
+                  color: Theme.of(context).primaryColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "LOGOUT",
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        Icon(
+                          Icons.logout,
+                          size: 40,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
   }
 
-  Container settingNavigatorTab(BuildContext context, String title) {
+  Container settingNavigatorTab(
+      BuildContext context, String title, VoidCallback function) {
     return widgetUnderlined(
         ListTile(
-          onTap: () {
-            print("Navigate to $title");
-          },
+          onTap: function,
           leading: Text(
             title,
             style: Theme.of(context).textTheme.subtitle1,

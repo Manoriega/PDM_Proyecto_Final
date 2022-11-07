@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokimon/classes/Pokemon.dart';
 import 'package:pokimon/components/PokemonWidget.dart';
+import 'package:pokimon/screens/team/bloc/team_bloc.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -13,14 +15,7 @@ class TeamPage extends StatefulWidget {
 }
 
 class _TeamPageState extends State<TeamPage> {
-  List<Pokemon> Pokemonlist = [
-    Pokemon("Pikachu", "Mouse", "Electric", "0.4m", "6.0 kg",
-        "assets/spr_frlg_025.png", 35, 55, 40, 90, Colors.amber),
-    Pokemon("Charizard", "Flame", "Fire", "1.7m", "90.5 kg",
-        "assets/spr_frlg_006.png", 78, 84, 78, 100, Colors.deepOrange),
-    Pokemon("Vaporeon", "Bubble Jet", "water", "1.0m", "29.0 kg",
-        "assets/spr_frlg_134.png", 130, 65, 60, 65, Colors.blue)
-  ];
+  List<Pokemon> Pokemonlist = [];
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +27,27 @@ class _TeamPageState extends State<TeamPage> {
             style: Theme.of(context).textTheme.headline3,
           ),
         ),
-        body: GridView.count(
-          crossAxisCount: 2,
-          children: List.generate(Pokemonlist.length, (index) {
-            return (PokemonWidget(aPokemon: Pokemonlist[index]));
-          }),
+        body: BlocConsumer<TeamBloc, TeamState>(
+          listener: (context, state) {
+            // TODO: implement listener
+          },
+          builder: (context, state) {
+            if (state is TeamSucceedState) {
+              return pokemonView(state.myTeam);
+            }
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
         ));
+  }
+
+  GridView pokemonView(List<Pokemon> team) {
+    return GridView.count(
+      crossAxisCount: 2,
+      children: List.generate(team.length, (index) {
+        return (PokemonWidget(aPokemon: team[index]));
+      }),
+    );
   }
 }
