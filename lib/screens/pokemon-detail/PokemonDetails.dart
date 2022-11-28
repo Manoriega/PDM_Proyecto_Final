@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pokimon/screens/pokemon-detail/TeamProvider.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +19,30 @@ class PokemonDetails extends StatefulWidget {
 }
 
 class _MyAppState extends State<PokemonDetails> {
+  Future<bool> searchPokemonInDB(String pokemon) async {
+    var queryUser = FirebaseFirestore.instance
+            .collection("pocket_users")
+            .doc(FirebaseAuth.instance.currentUser!.uid),
+        docsRef = await queryUser.get(),
+        listIds = docsRef.data()?["pokemons"];
+
+    var queryPokemons =
+        await FirebaseFirestore.instance.collection("pokemon_users").get();
+
+    var myTeamPokemons = queryPokemons.docs
+        .where(
+            (doc) => listIds.contains(doc.id) && doc.data()["onTeam"] == true)
+        .map((doc) => doc.data().cast<String, dynamic>())
+        .toList();
+    print(myTeamPokemons);
+    List<String> pokemonNames = [];
+    for (int i = 0; i < myTeamPokemons.length; i++) {
+      pokemonNames.add(myTeamPokemons[i]["name"]);
+    }
+
+    return myTeamPokemons.contains(widget.pokemon.name);
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Tab> tabs = <Tab>[
@@ -123,29 +150,68 @@ class _MyAppState extends State<PokemonDetails> {
                       children: _views,
                     ),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: ElevatedButton.icon(
-                            onPressed: () {},
-                            icon: Image.asset(
-                              'assets/PokeBallPixelArt.png',
-                              height: 50,
-                              width: 50,
-                              fit: BoxFit.cover,
-                            ),
-                            label: Text(
-                              "Add to team",
-                              style: Theme.of(context).textTheme.subtitle2,
-                            )),
-                      ),
-                    ],
+                  FutureBuilder<bool?>(
+                    future: searchPokemonInDB(widget.pokemon.name),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data == true) {
+                        return CreateTeamButton(context);
+                      } else if (snapshot.hasData && snapshot.data == false) {
+                        return RemoveFromTeamButton(context);
+                      }
+                      return Container(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator());
+                    },
                   )
                 ],
               )),
         );
       }),
+    );
+  }
+
+  Row CreateTeamButton(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: ElevatedButton.icon(
+              onPressed: () {},
+              icon: Image.asset(
+                'assets/PokeBallPixelArt.png',
+                height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              ),
+              label: Text(
+                "Add to team",
+                style: Theme.of(context).textTheme.subtitle2,
+              )),
+        ),
+      ],
+    );
+  }
+
+  Row RemoveFromTeamButton(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: ElevatedButton.icon(
+              onPressed: () {},
+              icon: Image.asset(
+                'assets/PokeBallPixelArt.png',
+                height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              ),
+              label: Text(
+                "Remove from team",
+                style: Theme.of(context).textTheme.subtitle2,
+              )),
+        ),
+      ],
     );
   }
 
@@ -161,5 +227,13 @@ class _MyAppState extends State<PokemonDetails> {
             style: Theme.of(context).textTheme.subtitle1),
       ],
     );
+  }
+
+  Future<void> removeFromTeam() async {
+    var pokemonInDB = await FirebaseFirestore.instance
+        .collection('pokemon_users')
+        .where('name', isEqualTo: widget.pokemon.name)
+        .where('onTeam', isEqualTo: true)
+        .get();
   }
 }

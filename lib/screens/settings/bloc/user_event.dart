@@ -10,3 +10,5 @@ abstract class UserEvent extends Equatable {
 class GetMyProfileEvent extends UserEvent {}
 
 class ResetProfileEvent extends UserEvent {}
+
+class UpdateUserName extends UserEvent {}

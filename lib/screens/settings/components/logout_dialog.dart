@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pokimon/screens/login/bloc/auth_bloc.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 
 class LogOutDialog extends StatelessWidget {
@@ -13,7 +15,8 @@ class LogOutDialog extends StatelessWidget {
       actions: [
         TextButton(
             onPressed: () async {
-              await _signOut();
+              //await _signOut();
+              BlocProvider.of<AuthBloc>(context).add(SignOutEvent());
               Navigator.pushReplacement<void, void>(
                   context,
                   MaterialPageRoute<void>(

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pokimon/components/error_text.dart';
 import 'package:pokimon/components/input.dart';
@@ -38,6 +40,7 @@ class _ChangeNameDialogState extends State<ChangeNameDialog> {
         TextButton(
             onPressed: () {
               validateUserName(newUsernameController.text, acceptChange);
+              updateUser(newUsernameController.text);
             },
             child: Text("Sí")),
         TextButton(
@@ -47,6 +50,17 @@ class _ChangeNameDialogState extends State<ChangeNameDialog> {
             child: Text("No")),
       ],
     );
+  }
+
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('pocket_users');
+
+  Future<void> updateUser(String newUSERString) {
+    return users
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({'username': newUSERString})
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
   }
 
   void validateUserName(String text, bool acceptChange) {

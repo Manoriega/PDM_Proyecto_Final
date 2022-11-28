@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pokimon/classes/user.dart';
 import 'package:pokimon/components/loading_screen.dart';
 import 'package:pokimon/components/show_custom_dialog.dart';
 import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
@@ -14,11 +15,16 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool isActive = false;
+  TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(
+          'Profile',
+          style: Theme.of(context).textTheme.headline1,
+        ),
       ),
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
@@ -26,6 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
         builder: (context, state) {
           if (state is UserSucceed) {
+            controller.text = state.myUser.userName;
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Center(
@@ -34,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CircleAvatar(
                       radius: 84,
                       child: LayoutBuilder(builder: (context, constraint) {
-                        return Icon(Icons.account_circle,
+                        return Icon(Icons.account_circle_outlined,
                             size: constraint.biggest.height);
                       }),
                     ),
@@ -46,6 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       trailing: IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () {
+                          setState(() {});
                           ShowCustomDialog(context, ChangeNameDialog());
                         },
                       ),

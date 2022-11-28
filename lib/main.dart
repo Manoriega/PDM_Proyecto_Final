@@ -9,11 +9,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pokimon/screens/begginer/beginner_page.dart';
 import 'package:pokimon/classes/Pokemon.dart';
 import 'package:pokimon/controllers/current_user.dart';
 import 'package:pokimon/models/themes/theme.dart';
+import 'package:pokimon/screens/begginer/bloc/beginner_pokemons_bloc.dart';
+import 'package:pokimon/screens/catch/bloc/catch_pokemon_bloc.dart';
 import 'package:pokimon/screens/combat/bloc/combat_bloc.dart';
+import 'package:pokimon/screens/garden/bloc/pokemon_garden_bloc.dart';
 import 'package:pokimon/screens/home/home_page.dart';
+import 'package:pokimon/screens/login/LoginPage2.dart';
+import 'package:pokimon/screens/login/bloc/auth_bloc.dart';
+import 'package:pokimon/screens/pokemon-detail/TeamProvider.dart';
 import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
 import 'package:pokimon/screens/signin/signin_page.dart';
 import 'package:pokimon/screens/team/bloc/team_bloc.dart';
@@ -34,16 +41,29 @@ void main() async {
 
   runApp(MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(),
+        ),
+        BlocProvider(
+          create: (context) => BeginnerPokemonsBloc(),
+        ),
+        BlocProvider(
+          create: (context) => CatchPokemonBloc(),
+        ),
         BlocProvider(create: (context) => TeamBloc()),
         BlocProvider(
           create: (context) => UserBloc(),
         ),
         BlocProvider(create: (context) => CombatBloc()),
+        BlocProvider(create: (context) => PokemonGardenBloc()),
       ],
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => ColorSchemeProvider()),
-          ChangeNotifierProvider(create: (context) => UserProvider())
+          ChangeNotifierProvider(create: (context) => UserProvider()),
+          ChangeNotifierProvider(
+            create: (context) => TeamProvider(),
+          )
         ],
         child: const MyApp(),
       )));
@@ -82,7 +102,7 @@ class MyApp extends StatelessWidget {
               textTheme: PokemonTheme),
           themeMode: theme.currentThemeMode,
           home: FirebaseAuth.instance.currentUser == null
-              ? SignInPage()
+              ? LoginPage2()
               : HomePage());
     }));
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pokimon/screens/catch/CapturePage.dart';
 import 'package:pokimon/screens/catch/catch_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pokimon/screens/garden/bloc/pokemon_garden_bloc.dart';
+import 'package:pokimon/screens/garden/garden_page.dart';
 import 'package:pokimon/screens/store/store_page.dart';
 import 'package:pokimon/screens/team/bloc/team_bloc.dart';
 import 'package:pokimon/screens/team/team_page.dart';
@@ -31,7 +33,9 @@ class MainPage extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => CatchPage()));
+                        MaterialPageRoute(builder: (context) => GardenPage()));
+                    BlocProvider.of<PokemonGardenBloc>(context)
+                        .add(getAllMyPokemonsEvent());
                   },
                   child: Container(
                     width: 390,
@@ -54,7 +58,7 @@ class MainPage extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.only(right: 150),
                           child: Text(
-                            "STORE",
+                            "GARDEN",
                             style: Theme.of(context).textTheme.headline1,
                           ),
                         )
@@ -73,10 +77,11 @@ class MainPage extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => TeamPage()));
+                    BlocProvider.of<TeamBloc>(context).add(GetMyTeamEvent());
                   },
                   child: Container(
                       width: 400,
-                      height: MediaQuery.of(context).size.height - 110,
+                      height: 670,
                       color: Theme.of(context).colorScheme.secondary,
                       child: Column(mainAxisSize: MainAxisSize.min, children: [
                         Text(
