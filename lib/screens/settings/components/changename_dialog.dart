@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokimon/components/error_text.dart';
 import 'package:pokimon/components/input.dart';
+import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
+import 'package:pokimon/screens/settings/components/profile_screen.dart';
 
 class ChangeNameDialog extends StatefulWidget {
   const ChangeNameDialog({super.key});
@@ -41,6 +44,11 @@ class _ChangeNameDialogState extends State<ChangeNameDialog> {
             onPressed: () {
               validateUserName(newUsernameController.text, acceptChange);
               updateUser(newUsernameController.text);
+              BlocProvider.of<UserBloc>(context).add(ResetProfileEvent());
+              BlocProvider.of<UserBloc>(context).add(GetMyProfileEvent());
+              Navigator.of(context).pop();
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ProfileScreen()));
             },
             child: Text("Sí")),
         TextButton(

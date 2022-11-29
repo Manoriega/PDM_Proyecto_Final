@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:pokimon/screens/pokemon-detail/TeamProvider.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
 import 'package:provider/provider.dart';
@@ -12,37 +13,14 @@ import '../../classes/Pokemon.dart';
 
 class PokemonDetails extends StatefulWidget {
   final Pokemon pokemon;
-  const PokemonDetails({super.key, required this.pokemon});
+  bool isInTeam;
+  PokemonDetails({super.key, required this.pokemon, required this.isInTeam});
 
   @override
   State<PokemonDetails> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<PokemonDetails> {
-  Future<bool> searchPokemonInDB(String pokemon) async {
-    var queryUser = FirebaseFirestore.instance
-            .collection("pocket_users")
-            .doc(FirebaseAuth.instance.currentUser!.uid),
-        docsRef = await queryUser.get(),
-        listIds = docsRef.data()?["pokemons"];
-
-    var queryPokemons =
-        await FirebaseFirestore.instance.collection("pokemon_users").get();
-
-    var myTeamPokemons = queryPokemons.docs
-        .where(
-            (doc) => listIds.contains(doc.id) && doc.data()["onTeam"] == true)
-        .map((doc) => doc.data().cast<String, dynamic>())
-        .toList();
-    print(myTeamPokemons);
-    List<String> pokemonNames = [];
-    for (int i = 0; i < myTeamPokemons.length; i++) {
-      pokemonNames.add(myTeamPokemons[i]["name"]);
-    }
-
-    return myTeamPokemons.contains(widget.pokemon.name);
-  }
-
   @override
   Widget build(BuildContext context) {
     List<Tab> tabs = <Tab>[
@@ -59,8 +37,8 @@ class _MyAppState extends State<PokemonDetails> {
             : Colors.white,
         height: 50,
         margin: EdgeInsets.all(1),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          shrinkWrap: true,
           children: [
             PokemonRow(context, "Species  ", " ${widget.pokemon.species}"),
             Text(widget.pokemon.description,
@@ -79,14 +57,14 @@ class _MyAppState extends State<PokemonDetails> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            PokemonRow(context, "HP ", "${widget.pokemon.hp}"),
-            PokemonRow(context, "ATTACK ", "${widget.pokemon.attack}"),
-            PokemonRow(context, "DEFENSE ", "${widget.pokemon.defense}"),
-            PokemonRow(
-                context, "SPECIAL ATTACK ", "${widget.pokemon.specialAttack}"),
-            PokemonRow(context, "SPECIAL DEFENSE ",
-                "${widget.pokemon.specialDefense}"),
-            PokemonRow(context, "SPEED ", "${widget.pokemon.speed}")
+            PokemonStatRow(context, "HP ", widget.pokemon.hp),
+            PokemonStatRow(context, "ATTACK ", widget.pokemon.attack),
+            PokemonStatRow(context, "DEFENSE ", widget.pokemon.defense),
+            PokemonStatRow(
+                context, "SPECIAL ATTACK ", widget.pokemon.specialAttack),
+            PokemonStatRow(
+                context, "SPECIAL DEFENSE ", widget.pokemon.specialDefense),
+            PokemonStatRow(context, "SPEED ", widget.pokemon.speed)
           ],
         ),
       ),
@@ -150,20 +128,9 @@ class _MyAppState extends State<PokemonDetails> {
                       children: _views,
                     ),
                   ),
-                  FutureBuilder<bool?>(
-                    future: searchPokemonInDB(widget.pokemon.name),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data == true) {
-                        return CreateTeamButton(context);
-                      } else if (snapshot.hasData && snapshot.data == false) {
-                        return RemoveFromTeamButton(context);
-                      }
-                      return Container(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator());
-                    },
-                  )
+                  widget.isInTeam
+                      ? RemoveFromTeamButton(context)
+                      : CreateTeamButton(context)
                 ],
               )),
         );
@@ -177,7 +144,11 @@ class _MyAppState extends State<PokemonDetails> {
         Expanded(
           flex: 2,
           child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                AddToTeam();
+                widget.isInTeam = !widget.isInTeam;
+                setState(() {});
+              },
               icon: Image.asset(
                 'assets/PokeBallPixelArt.png',
                 height: 50,
@@ -199,7 +170,11 @@ class _MyAppState extends State<PokemonDetails> {
         Expanded(
           flex: 2,
           child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                removeFromTeam();
+                widget.isInTeam = !widget.isInTeam;
+                setState(() {});
+              },
               icon: Image.asset(
                 'assets/PokeBallPixelArt.png',
                 height: 50,
@@ -211,6 +186,25 @@ class _MyAppState extends State<PokemonDetails> {
                 style: Theme.of(context).textTheme.subtitle2,
               )),
         ),
+      ],
+    );
+  }
+
+  Row PokemonStatRow(BuildContext context, String Stat, int actualstat) {
+    double actualvalue = actualstat / 100;
+    return Row(
+      children: [
+        Text(Stat,
+            textAlign: TextAlign.start,
+            style: Theme.of(context).textTheme.subtitle2),
+        Container(
+          height: 20,
+          width: 140,
+          child: LinearProgressIndicator(
+            color: widget.pokemon.pokemoncolor,
+            value: actualvalue,
+          ),
+        )
       ],
     );
   }
@@ -229,11 +223,49 @@ class _MyAppState extends State<PokemonDetails> {
     );
   }
 
+  Future<void> AddToTeam() async {
+    try {
+      var queryUser = FirebaseFirestore.instance
+              .collection("pocket_users")
+              .doc(FirebaseAuth.instance.currentUser!.uid),
+          docsRef = await queryUser.get(),
+          listIds = docsRef.data()?["pokemons"];
+
+      var queryPokemons =
+          await FirebaseFirestore.instance.collection("pokemon_users").get();
+      var thePokemonID = queryPokemons.docs.where((doc) =>
+          listIds.contains(doc.id) &&
+          doc.data()["onTeam"] == false &&
+          doc.data()["name"] == "${widget.pokemon.name.toLowerCase()}");
+      print(thePokemonID.first.id);
+      CollectionReference pokemons =
+          await FirebaseFirestore.instance.collection("pokemon_users");
+      pokemons.doc(thePokemonID.first.id).update({'onTeam': true});
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<void> removeFromTeam() async {
-    var pokemonInDB = await FirebaseFirestore.instance
-        .collection('pokemon_users')
-        .where('name', isEqualTo: widget.pokemon.name)
-        .where('onTeam', isEqualTo: true)
-        .get();
+    try {
+      var queryUser = FirebaseFirestore.instance
+              .collection("pocket_users")
+              .doc(FirebaseAuth.instance.currentUser!.uid),
+          docsRef = await queryUser.get(),
+          listIds = docsRef.data()?["pokemons"];
+
+      var queryPokemons =
+          await FirebaseFirestore.instance.collection("pokemon_users").get();
+      var thePokemonID = queryPokemons.docs.where((doc) =>
+          listIds.contains(doc.id) &&
+          doc.data()["onTeam"] == true &&
+          doc.data()["name"] == "${widget.pokemon.name.toLowerCase()}");
+      print(thePokemonID.first.id);
+      CollectionReference pokemons =
+          await FirebaseFirestore.instance.collection("pokemon_users");
+      pokemons.doc(thePokemonID.first.id).update({'onTeam': false});
+    } catch (e) {
+      print(e);
+    }
   }
 }

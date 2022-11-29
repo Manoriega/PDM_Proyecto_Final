@@ -61,7 +61,7 @@ class _TeamPageState extends State<TeamPage> {
     return GridView.count(
       crossAxisCount: 2,
       children: List.generate(team.length, (index) {
-        return (PokemonWidget(aPokemon: team[index]));
+        return (PokemonWidget(aPokemon: team[index], isInTeam: true));
       }),
     );
   }

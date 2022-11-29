@@ -30,7 +30,8 @@ class PokemonGardenBloc extends Bloc<PokemonGardenEvent, PokemonGardenState> {
           await FirebaseFirestore.instance.collection("pokemon_users").get();
 
       var myTeamPokemons = queryPokemons.docs
-          .where((doc) => listIds.contains(doc.id))
+          .where((doc) =>
+              listIds.contains(doc.id) && doc.data()["onTeam"] == false)
           .map((doc) => doc.data().cast<String, dynamic>())
           .toList();
       print(myTeamPokemons);

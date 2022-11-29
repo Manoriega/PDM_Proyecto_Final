@@ -10,7 +10,10 @@ class TestCatch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: PokemonWidget(aPokemon: pokemon),
+      child: PokemonWidget(
+        aPokemon: pokemon,
+        isInTeam: false,
+      ),
     );
   }
 }

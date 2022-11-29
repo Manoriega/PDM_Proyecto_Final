@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pokimon/components/error_text.dart';
 import 'package:pokimon/components/input.dart';
@@ -22,6 +23,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Cambiar contraseña'),
       ),
@@ -97,6 +99,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     if (validatePassword != newPassword) {
       validatePasswordErrors += "No coincide tu nueva contraseña. ";
     }
+    _changePassword(lastPassword, newPassword);
     setState(() {});
+  }
+
+  void _changePassword(String currentPassword, String newPassword) async {
+    final user = await FirebaseAuth.instance.currentUser;
+    final _email = user?.email;
+    final cred = EmailAuthProvider.credential(
+        email: _email.toString(), password: currentPassword);
+
+    user?.reauthenticateWithCredential(cred).then((value) {
+      user.updatePassword(newPassword).then((_) {
+        //Success, do something
+        print("Les go");
+      }).catchError((error) {
+        print(error);
+        //Error, show something
+      });
+    }).catchError((err) {});
   }
 }
