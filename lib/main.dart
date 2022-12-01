@@ -20,8 +20,7 @@ import 'package:pokimon/screens/team/bloc/team_bloc.dart';
 import 'package:pokimon/themes/app_themes.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
 import 'package:pokimon/utils/TextStyles.dart';
-import '../../../utils/secrets.dart' as SECRETS;
-import 'package:http/http.dart' as http;
+
 import 'package:provider/provider.dart';
 
 void main() async {

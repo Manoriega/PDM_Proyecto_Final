@@ -7,9 +7,11 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:pokimon/classes/Pokemon.dart';
 import 'package:http/http.dart' as http;
 import '../../../utils/secrets.dart' as SECRETS;
+import '../../combat/utils/utils.dart';
 
 part 'team_event.dart';
 part 'team_state.dart';
@@ -48,9 +50,12 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
             SECRETS.APIBASE + "pokemon-species/" + myTeamPokemons[i]["name"]);
         var speciesResponse = await http.get(speciesUri);
         Map<String, dynamic> speciesJSON = jsonDecode(speciesResponse.body);
-
-        myTeam
-            .add(Pokemon(pokemonJSON, speciesJSON, myTeamPokemons[i]["level"]));
+        myTeam.add(Pokemon(
+            pokemonJSON,
+            speciesJSON,
+            myTeamPokemons[i]["level"],
+            myTeamPokemons[i]["firstAttack"],
+            myTeamPokemons[i]["secondAttack"]));
       }
       emit(TeamSucceedState(myTeam: myTeam));
     } catch (e) {

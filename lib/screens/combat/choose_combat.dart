@@ -10,11 +10,7 @@ class ChooseCombat extends StatelessWidget {
       child: Column(
         children: [
           MaterialButton(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CombatPage(),
-              ));
-            },
+            onPressed: () {},
             child: Text("Player vs IA"),
             color: Theme.of(context).primaryColor,
           )

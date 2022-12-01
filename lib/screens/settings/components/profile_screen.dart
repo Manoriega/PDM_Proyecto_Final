@@ -7,7 +7,8 @@ import 'package:pokimon/screens/settings/components/battle_item.dart';
 import 'package:pokimon/screens/settings/components/changename_dialog.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final List<BattleItem> battles;
+  const ProfileScreen({super.key, required this.battles});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -26,36 +27,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
         builder: (context, state) {
           if (state is UserSucceed) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 84,
-                      child: LayoutBuilder(builder: (context, constraint) {
-                        return Icon(Icons.account_circle,
-                            size: constraint.biggest.height);
-                      }),
-                    ),
-                    ListTile(
-                      title: Text(
-                        state.myUser.userName,
-                        style: TextStyle(fontSize: 20),
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 84,
+                        child: LayoutBuilder(builder: (context, constraint) {
+                          return Icon(Icons.account_circle,
+                              size: constraint.biggest.height);
+                        }),
                       ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () {
-                          ShowCustomDialog(context, ChangeNameDialog());
-                        },
+                      ListTile(
+                        title: Text(
+                          state.myUser.userName,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            ShowCustomDialog(context, ChangeNameDialog());
+                          },
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      title: Text("Fecha de creación"),
-                      subtitle: Text(state.myUser.createdAt.toString()),
-                    ),
-                    BattleItem()
-                  ],
+                      ListTile(
+                        title: Text("Fecha de creación"),
+                        subtitle: Text(state.myUser.createdAt.toString()),
+                      ),
+                      Column(
+                        children: widget.battles,
+                      )
+                    ],
+                  ),
                 ),
               ),
             );

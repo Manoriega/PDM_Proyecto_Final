@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:pokimon/controllers/boxes.dart';
 import 'package:pokimon/models/themes/theme.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
+import 'package:pokimon/screens/settings/components/battle_item.dart';
 import 'package:pokimon/screens/settings/components/changepassword_screen.dart';
 import 'package:pokimon/screens/settings/components/logout_dialog.dart';
 import 'package:pokimon/screens/settings/components/profile_screen.dart';
@@ -44,11 +46,14 @@ class _SettingsPageState extends State<SettingsPage> {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ChangePasswordScreen()));
           }),
-          settingNavigatorTab(context, "Profile Info", () {
+          settingNavigatorTab(context, "Profile Info", () async {
             BlocProvider.of<UserBloc>(context).add(ResetProfileEvent());
             BlocProvider.of<UserBloc>(context).add(GetMyProfileEvent());
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+            List<BattleItem> battles = await getUserBattles();
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ProfileScreen(
+                      battles: battles,
+                    )));
           }),
           /* settingNavigatorTab(context, "Privacy", () {
             print("Privacy");
@@ -185,5 +190,30 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
     return list;
+  }
+
+  getUserBattles() async {
+    var queryUser = FirebaseFirestore.instance
+            .collection("pocket_users")
+            .doc(FirebaseAuth.instance.currentUser!.uid),
+        docsRef = await queryUser.get(),
+        listIds = docsRef.data()?["battles"];
+    var queryBattles =
+        await FirebaseFirestore.instance.collection("pocket_battles").get();
+
+    var myBattles = queryBattles.docs
+        .where((doc) => listIds.contains(doc.id))
+        .map((doc) => doc.data().cast<String, dynamic>())
+        .toList();
+    List<BattleItem> battlesWidgets = [];
+    for (var i = 0; i < myBattles.length; i++) {
+      var battleDoc = myBattles[i],
+          isPlayerWinner = battleDoc["Winner"] == docsRef.data()?["username"];
+      var date = battleDoc["createdAt"].toDate();
+      BattleItem battle = BattleItem(
+          winner: isPlayerWinner, winnerName: battleDoc["Winner"], date: date);
+      battlesWidgets.add(battle);
+    }
+    return battlesWidgets;
   }
 }

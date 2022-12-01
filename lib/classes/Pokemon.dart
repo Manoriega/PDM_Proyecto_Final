@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokimon/classes/Move.dart';
 
 class Pokemon {
   late String name;
@@ -9,7 +10,10 @@ class Pokemon {
   late String weight;
   late String imageurl;
   late String backImage;
+  late Move firstAttack;
+  late Move secondAttack;
   late int hp;
+  late int currentHP;
   late int attack;
   late int defense;
   late int specialAttack;
@@ -19,7 +23,7 @@ class Pokemon {
   late Color pokemoncolor;
 
   Pokemon(Map<String, dynamic> pokemonJson, Map<String, dynamic> speciesJson,
-      this.level) {
+      this.level, this.firstAttack, this.secondAttack) {
     name = speciesJson['names'][6]["name"];
     species = speciesJson['genera'][5]["genus"];
     description = speciesJson["flavor_text_entries"][4]["flavor_text"];
@@ -34,6 +38,7 @@ class Pokemon {
     specialDefense = pokemonJson['stats'][4]["base_stat"];
     speed = pokemonJson['stats'][5]["base_stat"];
     pokemoncolor = getColorByType(type);
+    currentHP = pokemonJson['stats'][0]["base_stat"];
   }
 
   @override
@@ -44,10 +49,36 @@ class Pokemon {
 
   Color getColorByType(String type) {
     switch (type) {
+      case "Normal":
+        return Colors.grey;
+      case "Fighting":
+        return Colors.brown[700]!;
+      case "Flying":
+        return Colors.blue[700]!;
+      case "Water":
+        return Colors.blue;
+      case "Bug":
+        return Colors.lightGreen[200]!;
+      case "Dragon":
+        return Colors.deepPurple[400]!;
+      case "Electric":
+        return Colors.yellow;
+      case "Ghost":
+        return Colors.purple[900]!;
       case "Fire":
         return Colors.red;
+      case "Ice":
+        return Colors.blue[100]!;
       case "Grass":
         return Colors.green;
+      case "Psychic":
+        return Colors.pink;
+      case "Rock":
+        return Colors.brown[200]!;
+      case "Ground":
+        return Colors.yellow[100]!;
+      case "Poison":
+        return Colors.purple[600]!;
     }
     return Colors.grey;
   }
