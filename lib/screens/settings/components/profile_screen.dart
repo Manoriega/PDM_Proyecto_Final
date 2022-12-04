@@ -1,8 +1,14 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pokimon/classes/user.dart';
 import 'package:pokimon/components/loading_screen.dart';
 import 'package:pokimon/components/show_custom_dialog.dart';
+import 'package:pokimon/screens/login/user_auth_repository.dart';
 import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
 import 'package:pokimon/screens/settings/components/battle_item.dart';
 import 'package:pokimon/screens/settings/components/changename_dialog.dart';
@@ -15,7 +21,25 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool isActive = false;
+  UserAuthRepository _authRepo = UserAuthRepository();
+  XFile? imageFile;
+
+  void PickUploadImage() async {
+    var user = await FirebaseAuth.instance.currentUser!.uid;
+    final _firebaseStorage = FirebaseStorage.instance;
+    final _imagePicker = ImagePicker();
+    XFile? image;
+    image = await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      File imagefile = File("${image.path}");
+      var snapshot =
+          await _firebaseStorage.ref().child("${user}").putFile(imagefile);
+      String downloadURL = await snapshot.ref.getDownloadURL();
+    } else {
+      print("No image received");
+    }
+  }
+
   TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -38,13 +62,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Center(
                 child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 84,
-                      child: LayoutBuilder(builder: (context, constraint) {
-                        return Icon(Icons.account_circle_outlined,
-                            size: constraint.biggest.height);
-                      }),
-                    ),
+                    Stack(children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(state.profileImage),
+                        radius: 84,
+                      ),
+                      Positioned(
+                        top: 120,
+                        left: 120,
+                        child: IconButton(
+                            onPressed: () async {
+                              imageFile = await ImagePicker()
+                                  .pickImage(source: ImageSource.gallery);
+                              print(imageFile?.path);
+                              UploadFile(imageFile!.path);
+                              BlocProvider.of<UserBloc>(context)
+                                  .add(ResetProfileEvent());
+                              BlocProvider.of<UserBloc>(context)
+                                  .add(GetMyProfileEvent());
+                              setState(() {});
+                            },
+                            icon: Icon(
+                              Icons.add_a_photo_sharp,
+                              size: 50,
+                            )),
+                      )
+                    ]),
                     ListTile(
                       title: Text(
                         state.myUser.userName,
@@ -78,5 +121,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
       ),
     );
+  }
+
+  Future<String> SearchForProfileImage() async {
+    var user = await FirebaseAuth.instance.currentUser!.uid;
+    Reference storageRef = FirebaseStorage.instance.ref().child("${user}");
+    return storageRef.getDownloadURL();
+  }
+
+  UploadFile(String filepath) async {
+    try {
+      File image = File(filepath);
+      var user = await FirebaseAuth.instance.currentUser!.uid;
+      Reference storageRef = FirebaseStorage.instance.ref().child("${user}");
+      TaskSnapshot uploadTask = await storageRef.putFile(image);
+
+      print("Uploaded image");
+      String downloadURL = await uploadTask.ref.getDownloadURL();
+      print(downloadURL);
+    } catch (e) {
+      print(e);
+    }
   }
 }

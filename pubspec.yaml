@@ -35,6 +35,7 @@ dependencies:
   flutterfire_ui:
   google_sign_in:
   sign_in_button:
+  firebase_storage:
   flutter_shimmer: 
 
 dev_dependencies:

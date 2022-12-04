@@ -15,8 +15,9 @@ class ErrorLoadingUserState extends UserState {}
 
 class UserSucceed extends UserState {
   final MyUser myUser;
+  final String profileImage;
 
-  UserSucceed({required this.myUser});
+  UserSucceed(this.profileImage, {required this.myUser});
   @override
   // TODO: implement props
   List<Object> get props => [myUser];
