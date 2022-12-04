@@ -14,7 +14,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetMyProfileEvent>(_getMyProfile);
     on<ResetProfileEvent>(_resetProfile);
   }
- 
+
   FutureOr<void> _getMyProfile(
       GetMyProfileEvent event, Emitter<UserState> emit) async {
     emit(LoadingUserState());
@@ -31,6 +31,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(ErrorLoadingUserState());
     }
   }
+
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('pocket_users');
 
   FutureOr<void> _resetProfile(
       ResetProfileEvent event, Emitter<UserState> emit) {

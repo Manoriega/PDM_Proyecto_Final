@@ -18,11 +18,8 @@ class PlayerLostDialog extends StatelessWidget {
         TextButton(
             onPressed: () async {
               await CombatUtils().registerCombat(1, enemyName);
-              await Navigator.pushReplacement<void, void>(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) => HomePage(),
-                  ));
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
             },
             child: Text("Salir")),
       ],

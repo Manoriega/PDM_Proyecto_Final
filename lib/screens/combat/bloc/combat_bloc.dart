@@ -31,30 +31,31 @@ class CombatBloc extends Bloc<CombatEvent, CombatState> {
         String attackName = event.attack == 0
             ? event.player.active.firstAttack.name
             : event.player.active.secondAttack.name;
-        String msg = "${event.player.active.name} utilizó $attackName";
+        String msg = "${event.player.active.name} used $attackName";
         emit(PlayerAttackSuccedState(msg));
         if (event.enemy.active.currentHP - damage <= 0) {
           event.enemy.active.currentHP = 0;
           if (trainerHasPokemon(event.enemy.team)) {
             emit(EnemyActivePokemonDiesState());
-            emit(WaitingState("El pokemon enemigo no puede continuar", 1));
+            emit(WaitingState(
+                "The foe pokemon can't continue with the combat", 1));
           } else {
             emit(PlayerWinState(
-                "${event.enemy.name} no puede continuar con el combate.\n${event.player.name} ganó"));
+                "${event.enemy.name} can't continue with the combat.\n${event.player.name} is the winner"));
           }
         } else {
           event.enemy.active.currentHP -= damage;
           emit(WaitingState(msg, 0));
         }
       } else {
-        String msg = "${event.player.active.name} falló al atacar";
+        String msg = "${event.player.active.name} failed to attack";
         emit(PlayerAttackFailedState(msg));
         emit(WaitingState(msg, 0));
       }
     }));
     on<PlayerUseItemEvent>(((event, emit) {
       event.item.useItem(event.pokemon);
-      String msg = "Utilizaste ${event.item.name}";
+      String msg = "You used ${event.item.name}";
       event.player.backpack.remove(event.item);
       emit(PlayerUseItem(msg));
       emit(WaitingState(msg, 0));
@@ -73,7 +74,7 @@ class CombatBloc extends Bloc<CombatEvent, CombatState> {
                 emit(PlayerActivePokemonDiesState());
               } else {
                 emit(PlayerLooseState(
-                    "${event.player.name} no puede continuar con el combate.\n${event.enemy.name} ganó"));
+                    "${event.player.name} can't continue with the combat.\n${event.enemy.name} is the winner"));
               }
             } else {
               event.player.active.currentHP -= damage;
@@ -81,14 +82,12 @@ class CombatBloc extends Bloc<CombatEvent, CombatState> {
                   ? event.enemy.active.firstAttack.name
                   : event.enemy.active.secondAttack.name;
               emit(EnemyActionState(
-                  "El ${event.enemy.active.name} enemigo utilizó ${attackName}"));
+                  "Foe ${event.enemy.active.name} used ${attackName}"));
               emit(WaitingState(
-                  "El ${event.enemy.active.name} enemigo utilizó ${attackName}",
-                  1));
+                  "Foe ${event.enemy.active.name} used ${attackName}", 1));
             }
           } else {
-            String msg =
-                "El ${event.enemy.active.name} enemigo falló al atacar";
+            String msg = "Foe ${event.enemy.active.name} failed to attack";
             emit(EnemyActionState(msg));
             emit(WaitingState(msg, 1));
           }
@@ -97,8 +96,8 @@ class CombatBloc extends Bloc<CombatEvent, CombatState> {
           int itemOpt = getItemOption(event.enemy.backpack);
           Item item = event.enemy.backpack[itemOpt];
           item.useItem(event.enemy.active);
-          emit(EnemyActionState("${event.enemy.name} utilizó ${item.name}"));
-          emit(WaitingState("${event.enemy.name} utilizó ${item.name}", 1));
+          emit(EnemyActionState("${event.enemy.name} used ${item.name}"));
+          emit(WaitingState("${event.enemy.name} used ${item.name}", 1));
           break;
         default:
       }

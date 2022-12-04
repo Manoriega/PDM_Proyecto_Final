@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pokimon/components/error_text.dart';
 import 'package:pokimon/components/input.dart';
@@ -22,25 +23,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Cambiar contraseña'),
+        title: const Text('Change password'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "Cambia tu contraseña",
+            "Change your password",
             style: Theme.of(context).textTheme.headline4,
           ),
           Input(context, true, false, false, lastPasswordController,
-              "Antigua contraseña", lastPasswordErrors),
+              "Old password", lastPasswordErrors),
           Input(context, true, false, false, newPasswordController,
-              "Nueva contraseña", newPasswordErrors),
+              "New password", newPasswordErrors),
           Input(context, true, false, false, validatePasswordController,
-              "Ingresa de nuevo la contraseña", validatePasswordErrors),
+              "Enter your password again", validatePasswordErrors),
           ListTile(
-            title: Text("Aceptas cambiar tu contraseña?"),
+            title: Text("Are you sure you want to change your password?"),
             leading: Checkbox(
                 value: acceptChange,
                 onChanged: (value) => setState(() {
@@ -55,16 +57,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 MaterialButton(
-                    onPressed: () => submitPassord(
-                        lastPasswordController.text,
-                        newPasswordController.text,
-                        validatePasswordController.text,
-                        acceptChange),
+                    onPressed: () async {
+                      if (submitPassord(
+                          lastPasswordController.text,
+                          newPasswordController.text,
+                          validatePasswordController.text,
+                          acceptChange)) {
+                        _changePassword(lastPasswordController.text,
+                            newPasswordController.text);
+                      }
+                    },
                     color: Theme.of(context).primaryColor,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "Cambiar Contraseña",
+                        "Change password",
                         style: TextStyle(fontSize: 30),
                       ),
                     )),
@@ -82,21 +89,49 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     lastPasswordErrors = "";
     newPasswordErrors = "";
     validatePasswordErrors = "";
+    var valid = true;
     if (acceptChange == false) {
-      checkErrors += "Debes aceptar para cambiar tu contraseña. ";
+      checkErrors += "You must accept changing your password.";
+      valid = false;
     }
     if (lastPassword == "") {
       lastPasswordErrors += "Password is required. ";
+      valid = false;
+    }
+    if (newPassword.length < 8 && newPassword.isNotEmpty) {
+      newPasswordErrors += "Password must have 8 characters or more. ";
+      valid = false;
     }
     if (newPassword == "") {
       newPasswordErrors += "Password is required. ";
+      valid = false;
     }
     if (validatePassword == "") {
       validatePasswordErrors += "Password is required. ";
+      valid = false;
     }
     if (validatePassword != newPassword) {
-      validatePasswordErrors += "No coincide tu nueva contraseña. ";
+      validatePasswordErrors += "Your new password doesn't match.";
+      valid = false;
     }
     setState(() {});
+    return valid;
+  }
+
+  void _changePassword(String currentPassword, String newPassword) async {
+    final user = await FirebaseAuth.instance.currentUser;
+    final _email = user?.email;
+    final cred = EmailAuthProvider.credential(
+        email: _email.toString(), password: currentPassword);
+
+    user?.reauthenticateWithCredential(cred).then((value) {
+      user.updatePassword(newPassword).then((_) {
+        //Success, do something
+        print("Les go");
+      }).catchError((error) {
+        print(error);
+        //Error, show something
+      });
+    }).catchError((err) {});
   }
 }

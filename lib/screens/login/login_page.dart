@@ -8,6 +8,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pokimon/components/loading_screen.dart';
 import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/signin/signin_page.dart';
+import 'package:provider/provider.dart';
+import 'package:sign_in_button/sign_in_button.dart';
+import '../../themes/provider/themes_provider.dart';
 import '../../utils/secrets.dart' as Secrets;
 
 class LoginPage extends StatefulWidget {
@@ -130,6 +133,14 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
+            /* Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SignInButton(
+                  (context.read<ColorSchemeProvider>().isDark == true)
+                      ? Buttons.googleDark
+                      : Buttons.google,
+                  onPressed: () {}),
+            ), */
             TextButton(
                 onPressed: () {
                   Navigator.pushReplacement<void, void>(
@@ -139,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 },
-                child: Text("No tienes cuenta? Registrate aqui"))
+                child: Text("Don't have an account? Sign in here")),
           ],
         ),
       ),
@@ -181,17 +192,30 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         isLoading = true;
       });
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password)
-          .then((user) => {
-                Navigator.pushReplacement<void, void>(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) => HomePage(),
-                  ),
-                )
-              })
-          .catchError((e) => print(e));
+      try {
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password)
+            .then((user) => {
+                  Navigator.pushReplacement<void, void>(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => HomePage(),
+                    ),
+                  )
+                })
+            .catchError((e) => print(e));
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Something went wrong. Please try again."),
+          ),
+        );
+        passwordErrors =
+            "User email or password are incorrect. Please try again.";
+      }
     }
   }
 

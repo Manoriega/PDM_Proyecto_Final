@@ -7,6 +7,7 @@ import 'package:pokimon/classes/Move.dart';
 import 'package:pokimon/classes/Pokemon.dart';
 import 'package:pokimon/classes/Trainer.dart';
 import 'package:pokimon/classes/item.dart';
+import 'package:pokimon/components/loading_screen.dart';
 import 'package:pokimon/screens/combat/combat_page.dart';
 import 'package:pokimon/screens/combat/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +17,20 @@ import './utils/utils.dart';
 import 'package:http/http.dart' as http;
 import '../../themes/provider/themes_provider.dart';
 
-class CombatMainPage extends StatelessWidget {
+class CombatMainPage extends StatefulWidget {
   const CombatMainPage({super.key});
 
   @override
+  State<CombatMainPage> createState() => _CombatMainPageState();
+}
+
+class _CombatMainPageState extends State<CombatMainPage> {
+  var isLoading = false;
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return LoadingScreen();
+    }
     return Container(
       margin: EdgeInsets.all(4),
       color: (context.read<ColorSchemeProvider>().isDark == true)
@@ -60,12 +70,15 @@ class CombatMainPage extends StatelessWidget {
                 bottomRight: Radius.circular(5.0)),
             child: InkWell(
               onTap: () async {
-                String name = "Manoriega", // getUserName();
+                setState(() {
+                  isLoading = true;
+                });
+                String name = await CombatUtils().getUserName(),
                     enemyName = CombatUtils().getEnemyName();
-                List<Pokemon> team = await getUserTeam();
-                List<Pokemon> enemyTeam =
-                    await getRandomTeam(team.length, team[0].level);
-                List<Item> backpack = await getBackPack();
+                List<Pokemon> team = await CombatUtils().getUserTeam();
+                List<Pokemon> enemyTeam = await CombatUtils()
+                    .getRandomTeam(team.length, team[0].level);
+                List<Item> backpack = await CombatUtils().getBackPack();
                 Trainer player = Trainer(name, team[0], team, backpack);
                 Trainer enemy =
                     Trainer(enemyName, enemyTeam[0], enemyTeam, backpack);
@@ -77,6 +90,9 @@ class CombatMainPage extends StatelessWidget {
                       isCatch: 0,
                       backgroundUrl: backgroundURL),
                 ));
+                setState(() {
+                  isLoading = false;
+                });
               },
               child: Container(
                 color: Theme.of(context).colorScheme.primary,
@@ -100,77 +116,6 @@ class CombatMainPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  getUserTeam() async {
-    var queryUser = FirebaseFirestore.instance
-            .collection("pocket_users")
-            .doc(FirebaseAuth.instance.currentUser!.uid),
-        docsRef = await queryUser.get(),
-        listIds = docsRef.data()?["pokemons"];
-
-    var queryPokemons =
-        await FirebaseFirestore.instance.collection("pokemon_users").get();
-
-    var myTeamPokemons = queryPokemons.docs
-        .where(
-            (doc) => listIds.contains(doc.id) && doc.data()["onTeam"] == true)
-        .map((doc) => doc.data().cast<String, dynamic>())
-        .toList();
-    List<Pokemon> myTeam = [];
-    for (var i = 0; i < myTeamPokemons.length; i++) {
-      var pokemonUri =
-          Uri.parse(SECRETS.APIBASE + "pokemon/" + myTeamPokemons[i]["name"]);
-      var pokemonResponse = await http.get(pokemonUri);
-      Map<String, dynamic> pokemonJSON = jsonDecode(pokemonResponse.body);
-      var speciesUri = Uri.parse(
-          SECRETS.APIBASE + "pokemon-species/" + myTeamPokemons[i]["name"]);
-      var speciesResponse = await http.get(speciesUri);
-      Map<String, dynamic> speciesJSON = jsonDecode(speciesResponse.body);
-      var firstAttackJSON = await getMove(myTeamPokemons[i]["firstAttack"]!),
-          secondAttackJSON = await getMove(myTeamPokemons[i]["secondAttack"]!);
-      Move firstAttack = Move(firstAttackJSON),
-          secondAttack = Move(secondAttackJSON);
-      myTeam.add(Pokemon(pokemonJSON, speciesJSON, myTeamPokemons[i]["level"],
-          firstAttack, secondAttack));
-    }
-    print(myTeam[0].firstAttack);
-    print(myTeam[0].secondAttack);
-    return myTeam;
-  }
-
-  getBackPack() async {
-    var queryUser = FirebaseFirestore.instance
-            .collection("pocket_users")
-            .doc(FirebaseAuth.instance.currentUser!.uid),
-        docsRef = await queryUser.get(),
-        listIds = docsRef.data()?["items"];
-    List<Item> backpack = [];
-    List myItems = [];
-    for (var i = 0; i < listIds.length; i++) {
-      var item = await FirebaseFirestore.instance
-          .collection("pocket_items")
-          .doc(listIds[i])
-          .get();
-      myItems.add(item.data());
-    }
-    for (var i = 0; i < myItems.length; i++) {
-      Map<String, dynamic> item = myItems[i];
-      backpack.add(Item(item["name"], item["effectValue"], item["type"],
-          item["imageUrl"], item["description"]));
-    }
-    return backpack;
-  }
-
-  getRandomTeam(int length, int level) async {
-    List<Pokemon> randomTeam = [];
-    for (var i = 0; i < length; i++) {
-      Pokemon pokemon = await CombatUtils().getRandomPokemon(level);
-      randomTeam.add(pokemon);
-      print(pokemon.firstAttack);
-      print(pokemon.secondAttack);
-    }
-    return randomTeam;
   }
 }
 

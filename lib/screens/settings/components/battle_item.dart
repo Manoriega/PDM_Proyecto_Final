@@ -24,11 +24,11 @@ class BattleItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            date.toString(),
+            "Winner: ${winnerName}",
             style: TextStyle(color: Colors.white),
           ),
           Text(
-            "Ganador: ${winnerName}",
+            date.toString(),
             style: TextStyle(color: Colors.white),
           ),
         ],

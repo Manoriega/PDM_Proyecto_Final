@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pokimon/components/loading_screen.dart';
+import 'package:pokimon/screens/begginer/beginner_page.dart';
 import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 import '../../utils/secrets.dart' as Secrets;
@@ -140,7 +141,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   );
                 },
-                child: Text("Ya tienes cuenta? Inicia sesion aqui"))
+                child: Text("Already have an account? Login here"))
           ],
         ),
       ),
@@ -202,7 +203,7 @@ class _SignInPageState extends State<SignInPage> {
     Navigator.pushReplacement<void, void>(
       context,
       MaterialPageRoute<void>(
-        builder: (BuildContext context) => HomePage(),
+        builder: (BuildContext context) => BegginnerPage(),
       ),
     );
   }

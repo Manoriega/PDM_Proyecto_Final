@@ -7,9 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokimon/classes/Move.dart';
 import 'package:pokimon/classes/Pokemon.dart';
+import 'package:pokimon/classes/item.dart';
+import 'package:pokimon/components/show_custom_dialog.dart';
 import 'package:pokimon/screens/combat/utils/random_backgrounds.dart';
 import 'package:pokimon/screens/combat/utils/random_enemy_names.dart';
 import 'package:pokimon/screens/combat/utils/random_pokemon.dart';
+import 'package:pokimon/screens/home/home_page.dart';
+import 'package:pokimon/screens/pokemon-detail/components/full-team-dialog.dart';
 import '../../../utils/secrets.dart' as SECRETS;
 
 final _random = Random();
@@ -86,6 +90,27 @@ class CombatUtils {
     return randomBackgrounds[i];
   }
 
+  CatchPokemon(Pokemon pokemon) async {
+    try {
+      var queryUser = FirebaseFirestore.instance
+          .collection("pocket_users")
+          .doc(FirebaseAuth.instance.currentUser!.uid);
+      var newPokemon = {
+        "name": pokemon.name.toLowerCase(),
+        "firstAttack": pokemon.firstAttack.name.toLowerCase(),
+        "secondAttack": pokemon.secondAttack.name.toLowerCase(),
+        "onTeam": false,
+        "level": pokemon.level
+      };
+      var queryPokemons =
+          FirebaseFirestore.instance.collection("pokemon_users").doc();
+      await queryPokemons.set(newPokemon);
+      queryUser.update({
+        "pokemons": FieldValue.arrayUnion([queryPokemons.id])
+      });
+    } catch (e) {}
+  }
+
   getEnemyName() {
     var i = randInRange(0, randomEnemies.length);
     return randomEnemies[i];
@@ -99,7 +124,7 @@ class CombatUtils {
         username = userRef.data()?["username"];
     var newBattle = {"Winner": "", "createdAt": DateTime.now()};
     if (type == 0) {
-      newBattle["Winner"] = username;
+      newBattle["Winner"] = FirebaseAuth.instance.currentUser!.uid;
     } else {
       newBattle["Winner"] = enemyName;
     }
@@ -271,5 +296,85 @@ class CombatUtils {
       default:
         return 1;
     }
+  }
+
+  getUserTeam() async {
+    var queryUser = FirebaseFirestore.instance
+            .collection("pocket_users")
+            .doc(FirebaseAuth.instance.currentUser!.uid),
+        docsRef = await queryUser.get(),
+        listIds = docsRef.data()?["pokemons"];
+
+    var queryPokemons =
+        await FirebaseFirestore.instance.collection("pokemon_users").get();
+
+    var myTeamPokemons = queryPokemons.docs
+        .where(
+            (doc) => listIds.contains(doc.id) && doc.data()["onTeam"] == true)
+        .map((doc) => doc.data().cast<String, dynamic>())
+        .toList();
+    List<Pokemon> myTeam = [];
+    for (var i = 0; i < myTeamPokemons.length; i++) {
+      var pokemonUri =
+          Uri.parse(SECRETS.APIBASE + "pokemon/" + myTeamPokemons[i]["name"]);
+      var pokemonResponse = await http.get(pokemonUri);
+      Map<String, dynamic> pokemonJSON = jsonDecode(pokemonResponse.body);
+      var speciesUri = Uri.parse(
+          SECRETS.APIBASE + "pokemon-species/" + myTeamPokemons[i]["name"]);
+      var speciesResponse = await http.get(speciesUri);
+      Map<String, dynamic> speciesJSON = jsonDecode(speciesResponse.body);
+      var firstAttackJSON = await getMove(myTeamPokemons[i]["firstAttack"]!),
+          secondAttackJSON = await getMove(myTeamPokemons[i]["secondAttack"]!);
+      Move firstAttack = Move(firstAttackJSON),
+          secondAttack = Move(secondAttackJSON);
+      myTeam.add(Pokemon(pokemonJSON, speciesJSON, myTeamPokemons[i]["level"],
+          firstAttack, secondAttack));
+    }
+    print(myTeam[0].firstAttack);
+    print(myTeam[0].secondAttack);
+    return myTeam;
+  }
+
+  getBackPack() async {
+    var queryUser = FirebaseFirestore.instance
+            .collection("pocket_users")
+            .doc(FirebaseAuth.instance.currentUser!.uid),
+        docsRef = await queryUser.get(),
+        listIds = docsRef.data()?["items"];
+    List<Item> backpack = [];
+    List myItems = [];
+    for (var i = 0; i < listIds.length; i++) {
+      var item = await FirebaseFirestore.instance
+          .collection("pocket_items")
+          .doc(listIds[i])
+          .get();
+      myItems.add(item.data());
+    }
+    for (var i = 0; i < myItems.length; i++) {
+      Map<String, dynamic> item = myItems[i];
+      backpack.add(Item(item["name"], item["effectValue"], item["type"],
+          item["imageUrl"], item["description"]));
+    }
+    return backpack;
+  }
+
+  getRandomTeam(int length, int level) async {
+    List<Pokemon> randomTeam = [];
+    for (var i = 0; i < length; i++) {
+      Pokemon pokemon = await CombatUtils().getRandomPokemon(level);
+      randomTeam.add(pokemon);
+      print(pokemon.firstAttack);
+      print(pokemon.secondAttack);
+    }
+    return randomTeam;
+  }
+
+  getUserName() async {
+    var queryUser = FirebaseFirestore.instance
+            .collection("pocket_users")
+            .doc(FirebaseAuth.instance.currentUser!.uid),
+        userRef = await queryUser.get(),
+        username = userRef.data()?["username"];
+    return username;
   }
 }

@@ -25,7 +25,7 @@ class Pokemon {
   Pokemon(Map<String, dynamic> pokemonJson, Map<String, dynamic> speciesJson,
       this.level, this.firstAttack, this.secondAttack) {
     name = speciesJson['names'][6]["name"];
-    species = speciesJson['genera'][5]["genus"];
+    species = speciesJson['genera'][7]["genus"];
     description = speciesJson["flavor_text_entries"][4]["flavor_text"];
     type = pokemonJson['types'][0]["type"]['name'][0].toUpperCase() +
         pokemonJson['types'][0]["type"]['name'].substring(1).toLowerCase();

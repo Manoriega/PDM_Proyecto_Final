@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pokimon/screens/login/bloc/auth_bloc.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 
 class LogOutDialog extends StatelessWidget {
@@ -8,19 +10,20 @@ class LogOutDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Cerrar sesión"),
-      content: Text("¿Quieres cerrar sesión?"),
+      title: Text("Logout"),
+      content: Text("Are you sure you want to logout?"),
       actions: [
         TextButton(
             onPressed: () async {
-              await _signOut();
-              Navigator.pushReplacement<void, void>(
+              //await _signOut();
+              BlocProvider.of<AuthBloc>(context).add(SignOutEvent());
+              Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) => const LoginPage(),
-                  ));
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => LoginPage()),
+                  (Route<dynamic> route) => route is LoginPage);
             },
-            child: Text("Sí")),
+            child: Text("Yes")),
         TextButton(
             onPressed: () {
               Navigator.pop(context, 'Cancel');

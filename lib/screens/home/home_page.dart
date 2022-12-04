@@ -20,13 +20,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentPageIndex = 0;
 
-  final _pagesNameList = ["Main Page", "capture", "Pokemons", "Combat"];
-  final _pagesList = [
-    MainPage(),
-    CapturePage(),
-    GardenPage(),
-    CombatMainPage()
-  ];  
+  final _pagesNameList = ["Main Page", "Capture", "Combat"];
+  final _pagesList = [MainPage(), CapturePage(), CombatMainPage()];
 
   @override
   Widget build(BuildContext context) {
@@ -76,10 +71,6 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             label: _pagesNameList[2],
-            icon: ImageIcon(AssetImage('assets/pokeballs.png')),
-          ),
-          BottomNavigationBarItem(
-            label: _pagesNameList[3],
             icon: ImageIcon(AssetImage('assets/pokemoncombaticon.png')),
           ),
         ],

@@ -3,25 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:pokimon/screens/combat/CombatMainPage.dart';
 import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/login/login_page.dart';
-import '../utils/utils.dart';
 
-class PlayerWonDialog extends StatelessWidget {
-  final String enemyName;
-  const PlayerWonDialog({super.key, required this.enemyName});
+class FullTeamDialog extends StatelessWidget {
+  const FullTeamDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Has ganado el combate"),
-      content: Text("¡Felicidades has derrotado a ${enemyName}!"),
+      title: Text("No puedes agregar este pokemon"),
+      content: Text(
+          "Tu equipo ya cuenta con 4 pokemons. Para agregar este pokemon debes remover uno de tu equipo"),
       actions: [
         TextButton(
-            onPressed: () async {
-              await CombatUtils().registerCombat(0, enemyName);
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
+            onPressed: () {
+              Navigator.pop(context, 'Cancel');
             },
-            child: Text("Salir")),
+            child: Text("Aceptar")),
       ],
     );
   }

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:pokimon/classes/Move.dart';
 import 'package:pokimon/classes/Pokemon.dart';
 import 'package:pokimon/classes/Trainer.dart';
 import 'package:pokimon/classes/item.dart';
@@ -10,6 +11,10 @@ import 'package:pokimon/components/show_custom_dialog.dart';
 import 'package:pokimon/screens/combat/bloc/combat_bloc.dart';
 import 'package:pokimon/screens/combat/components/player_lost_dialog.dart';
 import 'package:pokimon/screens/combat/components/player_won_dialog.dart';
+import 'package:pokimon/screens/combat/components/run_away_dialog.dart';
+import 'package:pokimon/screens/combat/components/wild_pokemon_catch.dart';
+import 'package:pokimon/screens/combat/components/wild_pokemon_flee.dart';
+import 'package:pokimon/themes/provider/themes_provider.dart';
 import './utils/utils.dart' as CombatUtils;
 
 class CombatPage extends StatefulWidget {
@@ -28,7 +33,12 @@ class CombatPage extends StatefulWidget {
 }
 
 class _CombatPageState extends State<CombatPage> {
-  var menuIndex = 0, detailedItem, currentMessage = "";
+  var menuIndex = 0,
+      detailedItem,
+      currentMessage = "",
+      detailedMove,
+      detailedPokemon,
+      numAttack;
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +47,14 @@ class _CombatPageState extends State<CombatPage> {
     var screenWidth = MediaQuery.of(context).size.width - statusBar;
     return WillPopScope(
       onWillPop: () async {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-              SnackBar(content: Text("No puedes huir de un combate")));
+        if (widget.isCatch == 0) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+                SnackBar(content: Text("You can't run away from a combat")));
+        } else {
+          ShowCustomDialog(context, RunAwayDialog());
+        }
         return false;
       },
       child: BlocConsumer<CombatBloc, CombatState>(
@@ -69,18 +83,28 @@ class _CombatPageState extends State<CombatPage> {
             setState(() {
               menuIndex = 0;
             });
-            ShowCustomDialog(
-                context,
-                PlayerWonDialog(
-                  enemyName: widget.enemy.name,
-                ));
+            if (widget.isCatch == 1) {
+              ShowCustomDialog(
+                  context, WildPokemonCatch(pokemon: widget.enemy.active));
+            } else {
+              ShowCustomDialog(
+                  context,
+                  PlayerWonDialog(
+                    enemyName: widget.enemy.name,
+                  ));
+            }
             // Testing
           } else if (state is PlayerLooseState) {
             setState(() {
               menuIndex = 0;
             });
-            ShowCustomDialog(
-                context, PlayerLostDialog(enemyName: widget.enemy.name));
+            if (widget.isCatch == 1) {
+              ShowCustomDialog(
+                  context, WildPokemonFlee(pokemon: widget.enemy.active));
+            } else {
+              ShowCustomDialog(
+                  context, PlayerLostDialog(enemyName: widget.enemy.name));
+            }
           }
         },
         builder: (context, state) {
@@ -109,7 +133,11 @@ class _CombatPageState extends State<CombatPage> {
                           width: screenWidth * .8,
                           padding: EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color:
+                                  (context.read<ColorSchemeProvider>().isDark ==
+                                          true)
+                                      ? Color.fromARGB(255, 43, 43, 43)
+                                      : Colors.white,
                               border: Border.all(
                                   color: Theme.of(context).disabledColor,
                                   width: 4),
@@ -156,7 +184,11 @@ class _CombatPageState extends State<CombatPage> {
                           width: screenWidth * .8,
                           padding: EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color:
+                                  (context.read<ColorSchemeProvider>().isDark ==
+                                          true)
+                                      ? Color.fromARGB(255, 43, 43, 43)
+                                      : Colors.white,
                               border: Border.all(
                                   color: Theme.of(context).disabledColor,
                                   width: 4),
@@ -211,7 +243,11 @@ class _CombatPageState extends State<CombatPage> {
                         height: screenHeight * .32,
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                            color: Color(0xFFC7C7C7),
+                            color:
+                                (context.read<ColorSchemeProvider>().isDark ==
+                                        true)
+                                    ? Color.fromARGB(255, 43, 43, 43)
+                                    : Color(0xFFC7C7C7),
                             border: Border.all(
                                 color: Theme.of(context).disabledColor,
                                 width: 2),
@@ -237,29 +273,29 @@ class _CombatPageState extends State<CombatPage> {
     return GridView.count(
       crossAxisCount: 2,
       children: [
-        actionButton("Pelear", Colors.red[300], () {
+        actionButton("Fight", Colors.red[300], () {
           setState(() {
             menuIndex = 1;
           });
         }),
-        actionButton("Mochila", Colors.green[300], () {
+        actionButton("Items", Colors.green[300], () {
           setState(() {
             menuIndex = 3;
           });
         }),
-        actionButton("Equipo", Colors.brown[300], () {
+        actionButton("Team", Colors.brown[300], () {
           setState(() {
             menuIndex = 2;
           });
         }),
-        actionButton("Huir", Colors.deepOrange[300], () {
+        actionButton("Run away", Colors.deepOrange[300], () {
           if (widget.isCatch == 0) {
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                  SnackBar(content: Text("No puedes huir de un combate")));
+                  SnackBar(content: Text("You can't run away from a combat.")));
           } else {
-            Navigator.of(context).pop();
+            ShowCustomDialog(context, RunAwayDialog());
           }
         }),
       ],
@@ -284,33 +320,35 @@ class _CombatPageState extends State<CombatPage> {
       child: Container(
         padding: EdgeInsets.all(12.0),
         decoration: BoxDecoration(
-            color: Colors.white,
+            color: (context.read<ColorSchemeProvider>().isDark == true)
+                ? Colors.black
+                : Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(32))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text(msg), Text("Pulsa para continuar")],
+          children: [Text(msg), Text("Press to continue...")],
         ),
       ),
     );
   }
 
   Widget FightMenu() {
-    String firstAttack =
-            firstCharacterCap(widget.player.active.firstAttack.name),
-        secondAttack =
-            firstCharacterCap(widget.player.active.secondAttack.name);
+    Move firstAttack = widget.player.active.firstAttack,
+        secondAttack = widget.player.active.secondAttack;
     return GridView.count(
       crossAxisCount: 2,
       children: [
-        actionButton(firstAttack, Colors.grey[300], () {
+        actionButton(firstCharacterCap(firstAttack.name), firstAttack.moveColor,
+            () {
           BlocProvider.of<CombatBloc>(context)
               .add(PlayerAttackEvent(0, widget.player, widget.enemy));
           setState(() {
             menuIndex = 7;
           });
         }),
-        actionButton(secondAttack, Colors.grey[300], () {
+        actionButton(
+            firstCharacterCap(secondAttack.name), secondAttack.moveColor, () {
           BlocProvider.of<CombatBloc>(context)
               .add(PlayerAttackEvent(1, widget.player, widget.enemy));
           setState(() {
@@ -318,7 +356,7 @@ class _CombatPageState extends State<CombatPage> {
           });
         }),
         Text(""),
-        actionButton("Atrás", Colors.deepOrange[300], () {
+        actionButton("Back", Colors.deepOrange[300], () {
           setState(() {
             menuIndex = 0;
           });
@@ -341,7 +379,7 @@ class _CombatPageState extends State<CombatPage> {
       }));
     }
     if (options.length % 2 == 0) options.add(Text(""));
-    options.add(actionButton("Atrás", Colors.deepOrange[300], () {
+    options.add(actionButton("Back", Colors.deepOrange[300], () {
       setState(() {
         menuIndex = 0;
       });
@@ -371,14 +409,14 @@ class _CombatPageState extends State<CombatPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            actionButton("Utilizar", itemC, () {
+            actionButton("Use", itemC, () {
               BlocProvider.of<CombatBloc>(context).add(PlayerUseItemEvent(
                   item, widget.player.active, widget.player));
               setState(() {
                 menuIndex = 7;
               });
             }),
-            actionButton("Atrás", Colors.deepOrange[300], () {
+            actionButton("Back", Colors.deepOrange[300], () {
               setState(() {
                 menuIndex = 3;
               });
@@ -396,16 +434,15 @@ class _CombatPageState extends State<CombatPage> {
       Color? colorP = pokemon.pokemoncolor;
       if (pokemon != widget.player.active) {
         options.add(actionButton(pokemon.name, colorP, () {
-          BlocProvider.of<CombatBloc>(context)
-              .add(PlayerChangePokemonEvent(pokemon));
           setState(() {
-            menuIndex = 7;
+            detailedPokemon = pokemon;
+            menuIndex = 9;
           });
         }));
       }
     }
     if (options.length % 2 == 0) options.add(Text(""));
-    options.add(actionButton("Atrás", Colors.deepOrange[300], () {
+    options.add(actionButton("Back", Colors.deepOrange[300], () {
       setState(() {
         menuIndex = 0;
       });
@@ -414,6 +451,42 @@ class _CombatPageState extends State<CombatPage> {
       crossAxisCount: 2,
       children: options,
       childAspectRatio: (2),
+    );
+  }
+
+  Widget pokemonDetail(Pokemon pokemon) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(pokemon.name, style: Theme.of(context).textTheme.headline1),
+            Text("HP: ${pokemon.currentHP}/${pokemon.hp}",
+                style: Theme.of(context).textTheme.headline2),
+          ],
+        ),
+        Image.network(pokemon.imageurl, scale: 0.84),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            actionButton("Change", pokemon.pokemoncolor, () {
+              BlocProvider.of<CombatBloc>(context)
+                  .add(PlayerChangePokemonEvent(pokemon));
+              setState(() {
+                menuIndex = 7;
+              });
+              setState(() {
+                menuIndex = 7;
+              });
+            }),
+            actionButton("Back", Colors.deepOrange[300], () {
+              setState(() {
+                menuIndex = 2;
+              });
+            })
+          ],
+        )
+      ],
     );
   }
 
@@ -456,6 +529,8 @@ class _CombatPageState extends State<CombatPage> {
         return ChangePokemon();
       case 7:
         return LoadingMenu();
+      case 9:
+        return pokemonDetail(detailedPokemon);
     }
   }
 

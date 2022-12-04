@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -7,25 +5,22 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:pokimon/classes/Move.dart';
-import 'package:pokimon/classes/Pokemon.dart';
-import 'package:http/http.dart' as http;
-import '../../../utils/secrets.dart' as SECRETS;
-import '../../combat/utils/utils.dart';
+import 'package:pokimon/utils/secrets.dart';
 
-part 'team_event.dart';
-part 'team_state.dart';
+import '../../../classes/Pokemon.dart';
 
-class TeamBloc extends Bloc<TeamEvent, TeamState> {
-  TeamBloc() : super(TeamInitial()) {
-    on<GetMyTeamEvent>(_getMyTeam);
-    on<ResetMyTeamEvent>(_resetMyTeam);
+part 'pokemon_garden_event.dart';
+part 'pokemon_garden_state.dart';
+
+class PokemonGardenBloc extends Bloc<PokemonGardenEvent, PokemonGardenState> {
+  PokemonGardenBloc() : super(PokemonGardenInitial()) {
+    on<getAllMyPokemonsEvent>(_getPokemons);
+    on<ResetAllMyPokemonsEvent>(_resetMyGarden);
   }
 
-  FutureOr<void> _getMyTeam(
-      GetMyTeamEvent event, Emitter<TeamState> emit) async {
-    emit(LoadingTeamState());
+  FutureOr<void> _getPokemons(getAllMyPokemonsEvent event, emit) async {
     try {
       var queryUser = FirebaseFirestore.instance
               .collection("pocket_users")
@@ -37,21 +32,23 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           await FirebaseFirestore.instance.collection("pokemon_users").get();
 
       var myTeamPokemons = queryPokemons.docs
-          .where(
-              (doc) => listIds.contains(doc.id) && doc.data()["onTeam"] == true)
+          .where((doc) =>
+              listIds.contains(doc.id) && doc.data()["onTeam"] == false)
           .map((doc) => doc.data().cast<String, dynamic>())
           .toList();
+      print(myTeamPokemons);
       List<Pokemon> myTeam = [];
       for (var i = 0; i < myTeamPokemons.length; i++) {
         var pokemonUri =
-            Uri.parse(SECRETS.APIBASE + "pokemon/" + myTeamPokemons[i]["name"]);
-        dynamic pokemonResponse = await http.get(pokemonUri);
+            Uri.parse(APIBASE + "pokemon/" + myTeamPokemons[i]["name"]);
+        dynamic pokemonResponse = await get(pokemonUri);
         Map<String, dynamic> pokemonJSON =
             await jsonDecode(pokemonResponse.body);
-        dynamic speciesUri = Uri.parse(
-            SECRETS.APIBASE + "pokemon-species/" + myTeamPokemons[i]["name"]);
-        var speciesResponse = await http.get(speciesUri);
-        Map<String, dynamic> speciesJSON = jsonDecode(speciesResponse.body);
+        dynamic speciesUri =
+            Uri.parse(APIBASE + "pokemon-species/" + myTeamPokemons[i]["name"]);
+        dynamic speciesResponse = await get(speciesUri);
+        Map<String, dynamic> speciesJSON =
+            await jsonDecode(speciesResponse.body);
         var firstAttackJSON = await getMove(myTeamPokemons[i]["firstAttack"]!),
             secondAttackJSON =
                 await getMove(myTeamPokemons[i]["secondAttack"]!);
@@ -60,14 +57,14 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         myTeam.add(Pokemon(pokemonJSON, speciesJSON, myTeamPokemons[i]["level"],
             firstAttack, secondAttack));
       }
-      emit(TeamSucceedState(myTeam: myTeam));
+      emit(GotAllPokemons(myPokemons: myTeam));
     } catch (e) {
       print("Error al obtener items en espera: $e");
-      emit(ErrorLoadingTeamState());
+      emit(PokemonGardenError());
     }
   }
 
-  FutureOr<void> _resetMyTeam(ResetMyTeamEvent event, Emitter<TeamState> emit) {
-    emit(TeamInitial());
+  FutureOr<void> _resetMyGarden(event, emit) {
+    emit(PokemonGardenInitial());
   }
 }

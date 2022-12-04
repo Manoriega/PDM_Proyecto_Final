@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:pokimon/classes/Pokemon.dart';
 import 'package:pokimon/components/PokemonWidget.dart';
 import 'package:pokimon/screens/team/bloc/team_bloc.dart';
+
+import '../../themes/provider/themes_provider.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -35,8 +38,20 @@ class _TeamPageState extends State<TeamPage> {
             if (state is TeamSucceedState) {
               return pokemonView(state.myTeam);
             }
-            return Center(
-              child: CircularProgressIndicator(),
+
+            return ListView.separated(
+              itemCount: 3,
+              itemBuilder: (BuildContext context, int index) {
+                return PlayStoreShimmer(
+                  isDarkMode:
+                      (context.read<ColorSchemeProvider>().isDark == true)
+                          ? true
+                          : false,
+                  hasBottomSecondLine: false,
+                );
+              },
+              separatorBuilder: (BuildContext context, index) =>
+                  const Divider(),
             );
           },
         ));
@@ -46,7 +61,10 @@ class _TeamPageState extends State<TeamPage> {
     return GridView.count(
       crossAxisCount: 2,
       children: List.generate(team.length, (index) {
-        return (PokemonWidget(aPokemon: team[index]));
+        return (PokemonWidget(
+          aPokemon: team[index],
+          isInTeam: true,
+        ));
       }),
     );
   }

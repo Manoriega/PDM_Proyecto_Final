@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pokimon/components/loading_screen.dart';
 import 'package:pokimon/controllers/boxes.dart';
 import 'package:pokimon/models/themes/theme.dart';
 import 'package:pokimon/screens/login/login_page.dart';
@@ -27,10 +28,22 @@ class _SettingsPageState extends State<SettingsPage> {
   int? currentRadio = Boxes.getThemeBox().getAt(0)?.flexSchemeData;
   bool? isDark = Boxes.getThemeBox().getAt(0)?.isDark;
 
-  var currentIndex = 1;
+  var currentIndex = 1, loading = false;
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            'Settings',
+            style: Theme.of(context).textTheme.headline1,
+          ),
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -47,6 +60,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 builder: (context) => ChangePasswordScreen()));
           }),
           settingNavigatorTab(context, "Profile Info", () async {
+            setState(() {
+              loading = true;
+            });
             BlocProvider.of<UserBloc>(context).add(ResetProfileEvent());
             BlocProvider.of<UserBloc>(context).add(GetMyProfileEvent());
             List<BattleItem> battles = await getUserBattles();
@@ -54,6 +70,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 builder: (context) => ProfileScreen(
                       battles: battles,
                     )));
+            setState(() {
+              loading = false;
+            });
           }),
           /* settingNavigatorTab(context, "Privacy", () {
             print("Privacy");
@@ -206,12 +225,16 @@ class _SettingsPageState extends State<SettingsPage> {
         .map((doc) => doc.data().cast<String, dynamic>())
         .toList();
     List<BattleItem> battlesWidgets = [];
+    var username = docsRef.data()?["username"];
     for (var i = 0; i < myBattles.length; i++) {
       var battleDoc = myBattles[i],
-          isPlayerWinner = battleDoc["Winner"] == docsRef.data()?["username"];
+          isPlayerWinner =
+              battleDoc["Winner"] == FirebaseAuth.instance.currentUser!.uid;
       var date = battleDoc["createdAt"].toDate();
       BattleItem battle = BattleItem(
-          winner: isPlayerWinner, winnerName: battleDoc["Winner"], date: date);
+          winner: isPlayerWinner,
+          winnerName: isPlayerWinner ? username : battleDoc["Winner"],
+          date: date);
       battlesWidgets.add(battle);
     }
     return battlesWidgets;

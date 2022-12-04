@@ -1,6 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokimon/components/error_text.dart';
 import 'package:pokimon/components/input.dart';
+import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
+import 'package:pokimon/screens/settings/components/profile_screen.dart';
+import 'package:pokimon/screens/settings/settings_page.dart';
 
 class ChangeNameDialog extends StatefulWidget {
   const ChangeNameDialog({super.key});
@@ -17,14 +23,14 @@ class _ChangeNameDialogState extends State<ChangeNameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Nombre de usuario"),
+      title: Text("Username"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Input(context, false, false, false, newUsernameController,
-              "Nuevo nombre de usuario", userNameErrors),
+              "New username", userNameErrors),
           ListTile(
-            title: Text("Aceptas cambiar tu usuario?"),
+            title: Text("I want to change my username"),
             leading: Checkbox(
                 value: acceptChange,
                 onChanged: (value) => setState(() {
@@ -37,9 +43,15 @@ class _ChangeNameDialogState extends State<ChangeNameDialog> {
       actions: [
         TextButton(
             onPressed: () {
-              validateUserName(newUsernameController.text, acceptChange);
+              if (validateUserName(newUsernameController.text, acceptChange)) {
+                updateUser(newUsernameController.text);
+                BlocProvider.of<UserBloc>(context).add(ResetProfileEvent());
+                BlocProvider.of<UserBloc>(context).add(GetMyProfileEvent());
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }
             },
-            child: Text("Sí")),
+            child: Text("Yes")),
         TextButton(
             onPressed: () {
               Navigator.pop(context, 'Cancel');
@@ -49,12 +61,24 @@ class _ChangeNameDialogState extends State<ChangeNameDialog> {
     );
   }
 
-  void validateUserName(String text, bool acceptChange) {
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('pocket_users');
+
+  Future<void> updateUser(String newUSERString) {
+    return users
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({'username': newUSERString})
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  validateUserName(String text, bool acceptChange) {
     acceptErrors = "";
     userNameErrors = "";
     if (!acceptChange) {
-      acceptErrors += "Debes aceptar que cambiará tu usuario";
+      acceptErrors += "You have to accept changing your username";
     }
     setState(() {});
+    return acceptChange;
   }
 }

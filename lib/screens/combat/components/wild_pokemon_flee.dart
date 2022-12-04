@@ -1,27 +1,30 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pokimon/classes/Pokemon.dart';
 import 'package:pokimon/screens/combat/CombatMainPage.dart';
 import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 import '../utils/utils.dart';
 
-class PlayerWonDialog extends StatelessWidget {
-  final String enemyName;
-  const PlayerWonDialog({super.key, required this.enemyName});
+class WildPokemonFlee extends StatelessWidget {
+  final Pokemon pokemon;
+  const WildPokemonFlee({super.key, required this.pokemon});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Has ganado el combate"),
-      content: Text("¡Felicidades has derrotado a ${enemyName}!"),
+      title: Text("The wild ${pokemon.name} beat you."),
+      content: Text("Maybe later you'll catch'em all."),
       actions: [
         TextButton(
             onPressed: () async {
-              await CombatUtils().registerCombat(0, enemyName);
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => HomePage()),
+                  (Route<dynamic> route) => route is HomePage);
             },
-            child: Text("Salir")),
+            child: Text("Exit")),
       ],
     );
   }
