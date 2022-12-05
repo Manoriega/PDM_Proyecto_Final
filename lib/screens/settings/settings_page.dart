@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pokimon/components/loading_screen.dart';
 import 'package:pokimon/controllers/boxes.dart';
 import 'package:pokimon/models/themes/theme.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
+import 'package:pokimon/screens/settings/components/battle_item.dart';
 import 'package:pokimon/screens/settings/components/changepassword_screen.dart';
 import 'package:pokimon/screens/settings/components/logout_dialog.dart';
 import 'package:pokimon/screens/settings/components/profile_screen.dart';
@@ -25,10 +28,22 @@ class _SettingsPageState extends State<SettingsPage> {
   int? currentRadio = Boxes.getThemeBox().getAt(0)?.flexSchemeData;
   bool? isDark = Boxes.getThemeBox().getAt(0)?.isDark;
 
-  var currentIndex = 1;
+  var currentIndex = 1, loading = false;
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            'Settings',
+            style: Theme.of(context).textTheme.headline1,
+          ),
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -44,15 +59,21 @@ class _SettingsPageState extends State<SettingsPage> {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ChangePasswordScreen()));
           }),
-          settingNavigatorTab(context, "Profile Info", () {
+          settingNavigatorTab(context, "Profile Info", () async {
+            setState(() {
+              loading = true;
+            });
             BlocProvider.of<UserBloc>(context).add(ResetProfileEvent());
             BlocProvider.of<UserBloc>(context).add(GetMyProfileEvent());
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+            List<BattleItem> battles = await getUserBattles();
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ProfileScreen(
+                      battles: battles,
+                    )));
+            setState(() {
+              loading = false;
+            });
           }),
-          /* settingNavigatorTab(context, "Privacy", () {
-            print("Privacy");
-          }), */
           subConfigDivider(context, Icons.more, "More"),
           widgetUnderlined(
               Row(
@@ -185,5 +206,34 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
     return list;
+  }
+
+  getUserBattles() async {
+    var queryUser = FirebaseFirestore.instance
+            .collection("pocket_users")
+            .doc(FirebaseAuth.instance.currentUser!.uid),
+        docsRef = await queryUser.get(),
+        listIds = docsRef.data()?["battles"];
+    var queryBattles =
+        await FirebaseFirestore.instance.collection("pocket_battles").get();
+
+    var myBattles = queryBattles.docs
+        .where((doc) => listIds.contains(doc.id))
+        .map((doc) => doc.data().cast<String, dynamic>())
+        .toList();
+    List<BattleItem> battlesWidgets = [];
+    var username = docsRef.data()?["username"];
+    for (var i = 0; i < myBattles.length; i++) {
+      var battleDoc = myBattles[i],
+          isPlayerWinner =
+              battleDoc["Winner"] == FirebaseAuth.instance.currentUser!.uid;
+      var date = battleDoc["createdAt"].toDate();
+      BattleItem battle = BattleItem(
+          winner: isPlayerWinner,
+          winnerName: isPlayerWinner ? username : battleDoc["Winner"],
+          date: date);
+      battlesWidgets.add(battle);
+    }
+    return battlesWidgets;
   }
 }

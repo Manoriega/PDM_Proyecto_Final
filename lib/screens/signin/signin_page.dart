@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pokimon/components/loading_screen.dart';
+import 'package:pokimon/screens/begginer/beginner_page.dart';
 import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 import '../../utils/secrets.dart' as Secrets;
@@ -140,7 +141,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   );
                 },
-                child: Text("Ya tienes cuenta? Inicia sesion aqui"))
+                child: Text("Already have an account? Login here"))
           ],
         ),
       ),
@@ -182,10 +183,22 @@ class _SignInPageState extends State<SignInPage> {
       setState(() {
         isLoading = true;
       });
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password)
-          .then((user) => {createUser(users, user.user!.uid)})
-          .catchError((e) => print(e));
+      try {
+        await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password)
+            .then((user) => {createUser(users, user.user!.uid)})
+            .catchError((e) => print(e));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Something went wrong. Please try again."),
+          ),
+        );
+        passwordErrors = "Email possibly already exists. Please try again.";
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -196,13 +209,14 @@ class _SignInPageState extends State<SignInPage> {
         "createdAt": DateTime.now(),
         "trainerPoints": 0,
         "battles": [],
-        "pokemons": []
+        "pokemons": [],
+        "items": []
       },
     );
     Navigator.pushReplacement<void, void>(
       context,
       MaterialPageRoute<void>(
-        builder: (BuildContext context) => HomePage(),
+        builder: (BuildContext context) => BegginnerPage(),
       ),
     );
   }

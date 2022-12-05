@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "432980535486",
+    "firebase_url": "https://curso-moviles-o2022-default-rtdb.firebaseio.com",
     "project_id": "curso-moviles-o2022",
     "storage_bucket": "curso-moviles-o2022.appspot.com"
   },
@@ -44,12 +45,94 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:432980535486:android:cfb0e4c2caf2b45c1316ef",
+        "android_client_info": {
+          "package_name": "com.example.music_finder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "432980535486-gssfimrcrsfcpr85m4abn5lk9kq5qbfv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.music_finder",
+            "certificate_hash": "60d34450fd5282f1355412e38cc0a1e2c9d7f83d"
+          }
+        },
+        {
+          "client_id": "432980535486-m85p7sojesb2tsps95lqht3kplf5g43k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpbdPKHg2SVG0LqBO7tc_unvhqoxZ75f0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "432980535486-m85p7sojesb2tsps95lqht3kplf5g43k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432980535486:android:c8bec9ddeb27dd6b1316ef",
+        "android_client_info": {
+          "package_name": "com.example.notifications"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "432980535486-ti8fn31ri9ikcpb46cgkejer8m2lfem1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.notifications",
+            "certificate_hash": "60d34450fd5282f1355412e38cc0a1e2c9d7f83d"
+          }
+        },
+        {
+          "client_id": "432980535486-m85p7sojesb2tsps95lqht3kplf5g43k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpbdPKHg2SVG0LqBO7tc_unvhqoxZ75f0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "432980535486-m85p7sojesb2tsps95lqht3kplf5g43k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:432980535486:android:268b6930e9b952481316ef",
         "android_client_info": {
           "package_name": "com.example.pokimon"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "432980535486-1d9frt3gnpnqtrkodqth2r10kc42hbp8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pokimon",
+            "certificate_hash": "f18225cc7b1bf7b1ad081a9e5a49f7dd9893f3f4"
+          }
+        },
         {
           "client_id": "432980535486-eipd912l1o4u1cve5i9nosheij6htgt2.apps.googleusercontent.com",
           "client_type": 1,

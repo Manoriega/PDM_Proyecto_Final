@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 
 class BattleItem extends StatelessWidget {
-  const BattleItem({super.key});
+  final bool winner;
+  final String winnerName;
+  final DateTime date;
+  const BattleItem(
+      {super.key,
+      required this.winner,
+      required this.winnerName,
+      required this.date});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.all(8.0),
       padding: EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-          color: Colors.green,
+          color: winner ? Colors.green : Colors.red[400],
           border: Border.all(color: Colors.transparent),
           borderRadius: BorderRadius.all(Radius.circular(20))),
       child: Column(
@@ -16,15 +24,19 @@ class BattleItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "2022-10-31",
+            "Winner: ${winnerName}",
             style: TextStyle(color: Colors.white),
           ),
           Text(
-            "Ganador: TrainerMaster8x51",
+            toDate(date),
             style: TextStyle(color: Colors.white),
           ),
         ],
       ),
     );
+  }
+
+  toDate(DateTime dt) {
+    return "${dt.day}-${dt.month}-${dt.year}";
   }
 }
