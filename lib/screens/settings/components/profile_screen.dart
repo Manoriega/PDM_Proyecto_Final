@@ -138,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   toDate(DateTime dt) {
-    return "${dt.day}-${dt.month}-${dt.year}";
+    return "${dt.day}-${dt.month}-${dt.year} at ${dt.hour}:${dt.minute}";
   }
 
   Future<String> SearchForProfileImage() async {
