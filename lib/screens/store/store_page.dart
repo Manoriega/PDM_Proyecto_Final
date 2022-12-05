@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokimon/screens/store/ItemWidget.dart';
-import 'package:pokimon/screens/store/StoreItem.dart';
+import 'package:pokimon/screens/store/bloc/store_bloc.dart';
 
 class StorePage extends StatelessWidget {
   const StorePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    StoreItem testItem = StoreItem(
-        "A spray-type medicine for wounds. It restores the HP of one Pokémon by just 20 points.",
-        20,
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
-        "Potion");
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Store",
-          style: Theme.of(context).textTheme.headline1,
-        ),
-      ),
-      body: Center(
-        child: ItemWidget(storeItem: testItem),
-      ),
+    return BlocBuilder<StoreBloc, StoreState>(
+      builder: (context, state) {
+        if (state is StoreSuccedState) {
+          List<ItemWidget> itemsWidget = [];
+          for (var item in state.storeItems) {
+            itemsWidget.add(ItemWidget(storeItem: item));
+          }
+          return GridView.count(
+            crossAxisCount: 2,
+            children: itemsWidget,
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }

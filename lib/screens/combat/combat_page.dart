@@ -85,12 +85,17 @@ class _CombatPageState extends State<CombatPage> {
             });
             if (widget.isCatch == 1) {
               ShowCustomDialog(
-                  context, WildPokemonCatch(pokemon: widget.enemy.active));
+                  context,
+                  WildPokemonCatch(
+                    pokemon: widget.enemy.active,
+                    currentListItem: widget.player.backpack,
+                  ));
             } else {
               ShowCustomDialog(
                   context,
                   PlayerWonDialog(
                     enemyName: widget.enemy.name,
+                    currentListItem: widget.player.backpack,
                   ));
             }
             // Testing
@@ -100,10 +105,18 @@ class _CombatPageState extends State<CombatPage> {
             });
             if (widget.isCatch == 1) {
               ShowCustomDialog(
-                  context, WildPokemonFlee(pokemon: widget.enemy.active));
+                  context,
+                  WildPokemonFlee(
+                    pokemon: widget.enemy.active,
+                    currentListItem: widget.player.backpack,
+                  ));
             } else {
               ShowCustomDialog(
-                  context, PlayerLostDialog(enemyName: widget.enemy.name));
+                  context,
+                  PlayerLostDialog(
+                    enemyName: widget.enemy.name,
+                    currentListItem: widget.player.backpack,
+                  ));
             }
           }
         },

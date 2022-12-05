@@ -25,6 +25,7 @@ import 'package:pokimon/screens/login/login_page.dart';
 import 'package:pokimon/screens/pokemon-detail/TeamProvider.dart';
 import 'package:pokimon/screens/settings/bloc/user_bloc.dart';
 import 'package:pokimon/screens/signin/signin_page.dart';
+import 'package:pokimon/screens/store/bloc/store_bloc.dart';
 import 'package:pokimon/screens/team/bloc/team_bloc.dart';
 import 'package:pokimon/themes/app_themes.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
@@ -57,6 +58,7 @@ void main() async {
         ),
         BlocProvider(create: (context) => CombatBloc()),
         BlocProvider(create: (context) => PokemonGardenBloc()),
+        BlocProvider(create: (context) => StoreBloc()..add(GetStoreEvent())),
       ],
       child: MultiProvider(
         providers: [

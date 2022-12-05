@@ -1,35 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:pokimon/screens/store/StoreItem.dart';
+import 'package:pokimon/classes/item.dart';
+import 'package:pokimon/screens/store/components/buy_item_page.dart';
 
 class ItemWidget extends StatelessWidget {
-  final StoreItem storeItem;
+  final Item storeItem;
   const ItemWidget({super.key, required this.storeItem});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          Image.network(
-            "${storeItem.itemImage}",
-            height: 200,
-            width: 200,
-            fit: BoxFit.fill,
-          ),
-          ListTile(
-            tileColor: Theme.of(context).colorScheme.primary,
-            trailing: Image.asset(
-              'assets/PokeBallPixelArt.png',
-              height: 50,
-              width: 50,
+    return GestureDetector(
+      onTap: (() {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => BuyItemPage(
+                  item: storeItem,
+                )));
+      }),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Image.network(
+              "${storeItem.image}",
+              scale: 0.3,
             ),
-            title: Text(
-              "${storeItem.name}",
-              style: Theme.of(context).textTheme.headline2,
-            ),
-          )
-        ],
+            ListTile(
+              tileColor: Theme.of(context).colorScheme.primary,
+              trailing: Image.asset(
+                'assets/PokeBallPixelArt.png',
+              ),
+              title: Text(
+                "${storeItem.name}",
+                style: Theme.of(context).textTheme.headline5,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

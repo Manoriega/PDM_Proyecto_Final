@@ -209,7 +209,8 @@ class _SignInPageState extends State<SignInPage> {
         "createdAt": DateTime.now(),
         "trainerPoints": 0,
         "battles": [],
-        "pokemons": []
+        "pokemons": [],
+        "items": []
       },
     );
     Navigator.pushReplacement<void, void>(

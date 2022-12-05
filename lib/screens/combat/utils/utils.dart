@@ -116,25 +116,41 @@ class CombatUtils {
     return randomEnemies[i];
   }
 
+  updateBackpack(List<Item> currentListItem) {
+    var queryUser = FirebaseFirestore.instance
+        .collection("pocket_users")
+        .doc(FirebaseAuth.instance.currentUser!.uid);
+    var currentItems = [];
+    for (var item in currentListItem) {
+      currentItems.add(item.name);
+    }
+    queryUser.update({"items": currentItems});
+  }
+
   registerCombat(int type, String enemyName) async {
     var queryUser = FirebaseFirestore.instance
             .collection("pocket_users")
             .doc(FirebaseAuth.instance.currentUser!.uid),
-        userRef = await queryUser.get(),
-        username = userRef.data()?["username"];
+        userRef = await queryUser.get();
     var newBattle = {"Winner": "", "createdAt": DateTime.now()};
     if (type == 0) {
       newBattle["Winner"] = FirebaseAuth.instance.currentUser!.uid;
-      queryUser.update({"trainerPoints": FieldValue.increment(33)});
+      queryUser.update({
+        "trainerPoints": FieldValue.increment(33),
+      });
     } else {
       newBattle["Winner"] = enemyName;
-      queryUser.update({"trainerPoints": FieldValue.increment(-33)});
+      if (userRef.data()?["trainerPoints"] >= 33) {
+        queryUser.update({"trainerPoints": FieldValue.increment(-33)});
+      } else {
+        queryUser.update({"trainerPoints": 0});
+      }
     }
     var queryBattles =
         FirebaseFirestore.instance.collection("pocket_battles").doc();
     await queryBattles.set(newBattle);
     queryUser.update({
-      "battles": FieldValue.arrayUnion([queryBattles.id]),
+      "battles": FieldValue.arrayUnion([queryBattles.id])
     });
   }
 
@@ -354,7 +370,7 @@ class CombatUtils {
       for (var i = 0; i < myItems.length; i++) {
         Map<String, dynamic> item = myItems[i];
         backpack.add(Item(item["name"], item["effectValue"], item["type"],
-            item["imageUrl"], item["description"]));
+            item["imageUrl"], item["description"], item["price"]));
       }
     }
     return backpack;
