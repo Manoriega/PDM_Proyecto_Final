@@ -37,6 +37,6 @@ class BattleItem extends StatelessWidget {
   }
 
   toDate(DateTime dt) {
-    return "${dt.day}-${dt.month}-${dt.year}";
+    return "${dt.day}-${dt.month}-${dt.year} at ${dt.hour}:${dt.minute}";
   }
 }
