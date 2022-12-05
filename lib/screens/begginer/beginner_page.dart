@@ -1,11 +1,6 @@
 import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_shimmer/flutter_shimmer.dart';
-import 'package:pokimon/classes/BegPokemons.dart';
 import 'package:pokimon/classes/BeginnerPokemon.dart';
 import 'package:pokimon/screens/begginer/bloc/beginner_pokemons_bloc.dart';
 import 'package:scroll_snap_list/scroll_snap_list.dart';
@@ -23,26 +18,29 @@ class BegginnerPage extends StatefulWidget {
 class _BegginnerPageState extends State<BegginnerPage> {
   List<BeginnerPokemon> beginnerPokemons = [
     BeginnerPokemon(
-        "Tackle",
+        "tackle",
         "ember",
         true,
         5,
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-iii/emerald/4.png",
-        "charmander"),
+        "charmander",
+        Color.fromARGB(255, 255, 127, 0)),
     BeginnerPokemon(
-        "Tackle",
+        "tackle",
         "water-gun",
         true,
         5,
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-iii/firered-leafgreen/7.png",
-        "squirtle"),
+        "squirtle",
+        Color.fromARGB(255, 176, 226, 255)),
     BeginnerPokemon(
-        "Tackle",
-        "Vine-whip",
+        "tackle",
+        "vine-whip",
         true,
         5,
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-iii/firered-leafgreen/1.png",
-        "bulbasaur")
+        "bulbasaur",
+        Color.fromARGB(255, 153, 255, 102))
   ];
   int _focusedIndex = 0;
 
@@ -83,7 +81,7 @@ class _BegginnerPageState extends State<BegginnerPage> {
                       left: 0,
                       child: Container(
                           decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.secondary,
+                              color: beginnerPokemons[index].color,
                               borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(8),
                                   bottomRight: Radius.circular(8))),
@@ -135,7 +133,7 @@ class _BegginnerPageState extends State<BegginnerPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "BIENVENIDO A POKIMON!",
+                "WELCOME TO POKIMON!",
                 style: Theme.of(context).textTheme.headline1,
                 textAlign: TextAlign.center,
               ),
@@ -145,14 +143,14 @@ class _BegginnerPageState extends State<BegginnerPage> {
             ),
             Center(
               child: Text(
-                "Por ser un nuevo entrenador\n has recibido un pokemon",
+                "In order to become a pokemon trainer \nyou'll receive one pokemon.",
                 style: Theme.of(context).textTheme.bodyText1,
                 textAlign: TextAlign.center,
               ),
             ),
             Divider(),
             Center(
-              child: Text("Para continuar por favor elige un pokemon",
+              child: Text("Please choose your first pokemon to continue.",
                   style: Theme.of(context).textTheme.bodyText1,
                   textAlign: TextAlign.center),
             ),
@@ -171,7 +169,6 @@ class _BegginnerPageState extends State<BegginnerPage> {
                   flex: 2,
                   child: ElevatedButton.icon(
                       onPressed: () {
-                        print(beginnerPokemons[_focusedIndex].name);
                         BlocProvider.of<BeginnerPokemonsBloc>(context).add(
                             AddBeginnerPokemonsEvent(
                                 pokemon: beginnerPokemons[_focusedIndex]));

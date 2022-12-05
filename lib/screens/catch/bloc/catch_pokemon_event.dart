@@ -14,3 +14,5 @@ class CatchByQR extends CatchPokemonEvent {
   @override
   List<Object> get props => [QRresultCode];
 }
+
+class ResetCatchEvent extends CatchPokemonEvent {}

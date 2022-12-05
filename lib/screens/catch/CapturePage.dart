@@ -1,18 +1,12 @@
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokimon/classes/Pokemon.dart';
 import 'package:pokimon/classes/Trainer.dart';
 import 'package:pokimon/classes/item.dart';
-import 'package:pokimon/components/loading_screen.dart';
-import 'package:pokimon/screens/catch/TestCatch.dart';
 import 'package:pokimon/screens/catch/bloc/catch_pokemon_bloc.dart';
 import 'package:pokimon/screens/combat/combat_page.dart';
 import 'package:pokimon/screens/combat/utils/utils.dart';
-import 'package:pokimon/screens/pokemon-detail/PokemonDetails.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class CapturePage extends StatefulWidget {
@@ -67,16 +61,17 @@ class _CapturePageState extends State<CapturePage> {
   Widget build(BuildContext context) {
     return BlocListener<CatchPokemonBloc, CatchPokemonState>(
       listener: (context, state) async {
-        if (state is IncorrectQR)
+        if (state is IncorrectQR) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Favor de escanear otra vez"),
+              content: Text("Please scan again."),
             ),
           );
+        }
         if (state is SucessfulCatch) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Se escaneo un pokemon"),
+              content: Text("A pokemon has been found."),
             ),
           );
           String name = "Manoriega";

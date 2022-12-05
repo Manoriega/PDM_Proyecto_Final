@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokimon/screens/MainPage.dart';
 import 'package:pokimon/screens/catch/CapturePage.dart';
-import 'package:pokimon/screens/catch/catch_page.dart';
 import 'package:pokimon/screens/combat/CombatMainPage.dart';
 import 'package:pokimon/screens/combat/combat_page.dart';
 import 'package:pokimon/screens/garden/garden_page.dart';

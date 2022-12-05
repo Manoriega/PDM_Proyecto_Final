@@ -27,37 +27,37 @@ class Move {
 Color getColorByType(String type) {
   switch (type) {
     case "Normal":
-      return Colors.grey;
+      return Color.fromARGB(255, 221, 204, 170);
     case "Fighting":
-      return Colors.brown[700]!;
+      return Color.fromARGB(255, 255, 106, 106);
     case "Flying":
-      return Colors.blue[700]!;
+      return Color.fromARGB(255, 186, 170, 255);
     case "Water":
-      return Colors.blue;
+      return Color.fromARGB(255, 176, 226, 255);
     case "Bug":
-      return Colors.lightGreen[200]!;
+      return Color.fromARGB(255, 153, 204, 51);
     case "Dragon":
-      return Colors.deepPurple[400]!;
+      return Color.fromARGB(255, 171, 130, 255);
     case "Electric":
       return Colors.yellow;
     case "Ghost":
-      return Colors.purple[900]!;
+      return Color.fromARGB(255, 119, 136, 153);
     case "Fire":
-      return Colors.red;
+      return Color.fromARGB(255, 255, 127, 0);
     case "Ice":
-      return Colors.blue[100]!;
+      return Color.fromARGB(255, 173, 216, 230);
     case "Grass":
-      return Colors.green;
+      return Color.fromARGB(255, 153, 255, 102);
     case "Psychic":
-      return Colors.pink;
+      return Color.fromARGB(255, 255, 181, 197);
     case "Rock":
-      return Colors.brown[200]!;
+      return Color.fromARGB(255, 205, 133, 63);
     case "Ground":
-      return Colors.yellow[100]!;
+      return Color.fromARGB(255, 222, 184, 135);
     case "Poison":
-      return Colors.purple[600]!;
+      return Color.fromARGB(255, 204, 136, 187);
   }
-  return Colors.grey;
+  return Color.fromARGB(255, 221, 204, 170);
 }
 
 getMove(String moveName) async {
@@ -71,14 +71,34 @@ getSpecialMove(String pokemonName) async {
   switch (pokemonName) {
     case "oddish":
       return await getMove('vine-whip');
+    case "charmander":
+      return await getMove('ember');
     case "dratini":
       return await getMove("dragon-tail");
     case "pikachu":
       return await getMove("thunder-shock");
     case "mankey":
       return await getMove("karate-chop");
+    case "seel":
+      return await getMove("water-gun");
+    case "grimer":
+      return await getMove("sludge");
+    case "drowzee":
+      return await getMove("confusion");
+    case "cubone":
+      return await getMove("bone-club");
+    case "snorlax":
+      return await getMove("headbutt");
+    case "paras":
+      return await getMove("leech-life");
+    case "geodude":
+      return await getMove("rock-throw");
+    case "gastly":
+      return await getMove("shadow-ball");
+    case "swinub":
+      return await getMove("powder-snow");
     default:
-      return await getMove("tacke");
+      return await getMove("tackle");
   }
 }
 

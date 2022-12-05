@@ -15,15 +15,16 @@ part 'catch_pokemon_state.dart';
 class CatchPokemonBloc extends Bloc<CatchPokemonEvent, CatchPokemonState> {
   CatchPokemonBloc() : super(CatchPokemonInitial()) {
     on<CatchByQR>(_getPokemon);
+    on<ResetCatchEvent>(_resetCatch);
   }
-  Future<FutureOr<void>> _getPokemon(CatchByQR event, emit) async {
+  _getPokemon(CatchByQR event, emit) async {
     try {
       var pokemonUri = Uri.parse(APIBASE + "pokemon/" + event.QRresultCode);
-      dynamic pokemonResponse = await get(pokemonUri);
+      var pokemonResponse = await get(pokemonUri);
       Map<String, dynamic> pokemonJSON = await jsonDecode(pokemonResponse.body);
-      dynamic speciesUri =
+      var speciesUri =
           Uri.parse(APIBASE + "pokemon-species/" + event.QRresultCode);
-      dynamic speciesResponse = await get(speciesUri);
+      var speciesResponse = await get(speciesUri);
       Map<String, dynamic> speciesJSON = await jsonDecode(speciesResponse.body);
       var firstAttackJSON = await getMove("tackle"),
           secondAttackJSON = await getSpecialMove(event.QRresultCode);
@@ -33,8 +34,11 @@ class CatchPokemonBloc extends Bloc<CatchPokemonEvent, CatchPokemonState> {
           Pokemon(pokemonJSON, speciesJSON, 5, firstAttack, secondAttack);
       emit(SucessfulCatch(pokemon: pokemonfromQR));
     } catch (e) {
-      print(e);
       emit(IncorrectQR());
     }
+  }
+
+  FutureOr<void> _resetCatch(event, emit) {
+    emit(CatchPokemonInitial());
   }
 }

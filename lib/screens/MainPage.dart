@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pokimon/screens/catch/CapturePage.dart';
-import 'package:pokimon/screens/catch/catch_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokimon/screens/garden/bloc/pokemon_garden_bloc.dart';
 import 'package:pokimon/screens/garden/garden_page.dart';
-import 'package:pokimon/screens/store/store_page.dart';
 import 'package:pokimon/screens/team/bloc/team_bloc.dart';
 import 'package:pokimon/screens/team/team_page.dart';
 import 'package:provider/provider.dart';

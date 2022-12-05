@@ -29,7 +29,16 @@ class _CombatMainPageState extends State<CombatMainPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return LoadingScreen();
+      return (Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          Text("We're preparing the combat. Please wait a moment.",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline2)
+        ],
+      )));
     }
     return Container(
       margin: EdgeInsets.all(4),
@@ -40,7 +49,7 @@ class _CombatMainPageState extends State<CombatMainPage> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ClipRRect(
+          /* ClipRRect(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(5), topRight: Radius.circular(5.0)),
             child: InkWell(
@@ -63,7 +72,7 @@ class _CombatMainPageState extends State<CombatMainPage> {
                 ),
               ),
             ),
-          ),
+          ), */
           ClipRRect(
             borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(5),

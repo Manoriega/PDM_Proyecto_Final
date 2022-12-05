@@ -74,9 +74,6 @@ class _SettingsPageState extends State<SettingsPage> {
               loading = false;
             });
           }),
-          /* settingNavigatorTab(context, "Privacy", () {
-            print("Privacy");
-          }), */
           subConfigDivider(context, Icons.more, "More"),
           widgetUnderlined(
               Row(

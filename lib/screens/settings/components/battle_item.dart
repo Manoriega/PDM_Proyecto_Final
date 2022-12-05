@@ -28,11 +28,15 @@ class BattleItem extends StatelessWidget {
             style: TextStyle(color: Colors.white),
           ),
           Text(
-            date.toString(),
+            toDate(date),
             style: TextStyle(color: Colors.white),
           ),
         ],
       ),
     );
+  }
+
+  toDate(DateTime dt) {
+    return "${dt.day}-${dt.month}-${dt.year}";
   }
 }

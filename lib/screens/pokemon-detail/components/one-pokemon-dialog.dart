@@ -4,15 +4,15 @@ import 'package:pokimon/screens/combat/CombatMainPage.dart';
 import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/login/login_page.dart';
 
-class FullTeamDialog extends StatelessWidget {
-  const FullTeamDialog({super.key});
+class OnePokemonDialog extends StatelessWidget {
+  const OnePokemonDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("You can't add this pokemon."),
-      content:
-          Text("Your team has already 4 pokemons. Leave one in the garden."),
+      title: Text("You can't remove this pokemon."),
+      content: Text(
+          "You only have one left pokemon in your team. You must have at least one in your team to be a pokemon trainer"),
       actions: [
         TextButton(
             onPressed: () {

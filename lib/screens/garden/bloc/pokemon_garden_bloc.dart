@@ -36,7 +36,6 @@ class PokemonGardenBloc extends Bloc<PokemonGardenEvent, PokemonGardenState> {
               listIds.contains(doc.id) && doc.data()["onTeam"] == false)
           .map((doc) => doc.data().cast<String, dynamic>())
           .toList();
-      print(myTeamPokemons);
       List<Pokemon> myTeam = [];
       for (var i = 0; i < myTeamPokemons.length; i++) {
         var pokemonUri =

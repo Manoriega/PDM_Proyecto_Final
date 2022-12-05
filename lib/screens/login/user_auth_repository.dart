@@ -31,10 +31,6 @@ class UserAuthRepository {
     final googleUser = await _googleSignIn.signIn();
     final googleAuth = await googleUser!.authentication;
 
-    print(">> User email:${googleUser.email}");
-    print(">> User name:${googleUser.displayName}");
-    print(">> User photo:${googleUser.photoUrl}");
-
     // credenciales de usuario autenticado con Google
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,

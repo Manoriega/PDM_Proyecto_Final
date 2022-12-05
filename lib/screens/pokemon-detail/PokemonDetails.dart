@@ -9,6 +9,7 @@ import 'package:pokimon/components/show_custom_dialog.dart';
 import 'package:pokimon/screens/home/home_page.dart';
 import 'package:pokimon/screens/pokemon-detail/TeamProvider.dart';
 import 'package:pokimon/screens/pokemon-detail/components/full-team-dialog.dart';
+import 'package:pokimon/screens/pokemon-detail/components/one-pokemon-dialog.dart';
 import 'package:pokimon/themes/provider/themes_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -43,6 +44,11 @@ class _MyAppState extends State<PokemonDetails> {
           shrinkWrap: true,
           children: [
             PokemonRow(context, "Species  ", " ${widget.pokemon.species}"),
+            PokemonRow(context, "Type  ", " ${widget.pokemon.type}"),
+            PokemonRow(context, "First attack  ",
+                " ${widget.pokemon.firstAttack.name}"),
+            PokemonRow(context, "Second attack ",
+                " ${widget.pokemon.secondAttack.name}"),
             Text(widget.pokemon.description,
                 textAlign: TextAlign.start,
                 style: Theme.of(context).textTheme.subtitle1),
@@ -172,8 +178,6 @@ class _MyAppState extends State<PokemonDetails> {
           child: ElevatedButton.icon(
               onPressed: () {
                 removeFromTeam();
-                widget.isInTeam = !widget.isInTeam;
-                setState(() {});
               },
               icon: Image.asset(
                 'assets/PokeBallPixelArt.png',
@@ -243,7 +247,6 @@ class _MyAppState extends State<PokemonDetails> {
             listIds.contains(doc.id) &&
             doc.data()["onTeam"] == false &&
             doc.data()["name"] == "${widget.pokemon.name.toLowerCase()}");
-        print(thePokemonID.first.id);
         CollectionReference pokemons =
             await FirebaseFirestore.instance.collection("pokemon_users");
         pokemons.doc(thePokemonID.first.id).update({'onTeam': true});
@@ -266,21 +269,28 @@ class _MyAppState extends State<PokemonDetails> {
               .doc(FirebaseAuth.instance.currentUser!.uid),
           docsRef = await queryUser.get(),
           listIds = docsRef.data()?["pokemons"];
-
       var queryPokemons =
           await FirebaseFirestore.instance.collection("pokemon_users").get();
-      var thePokemonID = queryPokemons.docs.where((doc) =>
-          listIds.contains(doc.id) &&
-          doc.data()["onTeam"] == true &&
-          doc.data()["name"] == "${widget.pokemon.name.toLowerCase()}");
-      print(thePokemonID.first.id);
-      CollectionReference pokemons =
-          await FirebaseFirestore.instance.collection("pokemon_users");
-      pokemons.doc(thePokemonID.first.id).update({'onTeam': false});
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (BuildContext context) => HomePage()),
-          (Route<dynamic> route) => route is HomePage);
+      var myTeamPokemons = queryPokemons.docs
+          .where(
+              (doc) => listIds.contains(doc.id) && doc.data()["onTeam"] == true)
+          .map((doc) => doc.data().cast<String, dynamic>())
+          .toList();
+      if (myTeamPokemons.length == 1) {
+        ShowCustomDialog(context, OnePokemonDialog());
+      } else {
+        var thePokemonID = queryPokemons.docs.where((doc) =>
+            listIds.contains(doc.id) &&
+            doc.data()["onTeam"] == true &&
+            doc.data()["name"] == "${widget.pokemon.name.toLowerCase()}");
+        CollectionReference pokemons =
+            await FirebaseFirestore.instance.collection("pokemon_users");
+        pokemons.doc(thePokemonID.first.id).update({'onTeam': false});
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+            (Route<dynamic> route) => route is HomePage);
+      }
     } catch (e) {
       print(e);
     }

@@ -125,14 +125,16 @@ class CombatUtils {
     var newBattle = {"Winner": "", "createdAt": DateTime.now()};
     if (type == 0) {
       newBattle["Winner"] = FirebaseAuth.instance.currentUser!.uid;
+      queryUser.update({"trainerPoints": FieldValue.increment(33)});
     } else {
       newBattle["Winner"] = enemyName;
+      queryUser.update({"trainerPoints": FieldValue.increment(-33)});
     }
     var queryBattles =
         FirebaseFirestore.instance.collection("pocket_battles").doc();
     await queryBattles.set(newBattle);
     queryUser.update({
-      "battles": FieldValue.arrayUnion([queryBattles.id])
+      "battles": FieldValue.arrayUnion([queryBattles.id]),
     });
   }
 
@@ -330,8 +332,6 @@ class CombatUtils {
       myTeam.add(Pokemon(pokemonJSON, speciesJSON, myTeamPokemons[i]["level"],
           firstAttack, secondAttack));
     }
-    print(myTeam[0].firstAttack);
-    print(myTeam[0].secondAttack);
     return myTeam;
   }
 
@@ -343,17 +343,19 @@ class CombatUtils {
         listIds = docsRef.data()?["items"];
     List<Item> backpack = [];
     List myItems = [];
-    for (var i = 0; i < listIds.length; i++) {
-      var item = await FirebaseFirestore.instance
-          .collection("pocket_items")
-          .doc(listIds[i])
-          .get();
-      myItems.add(item.data());
-    }
-    for (var i = 0; i < myItems.length; i++) {
-      Map<String, dynamic> item = myItems[i];
-      backpack.add(Item(item["name"], item["effectValue"], item["type"],
-          item["imageUrl"], item["description"]));
+    if (listIds != null) {
+      for (var i = 0; i < listIds.length; i++) {
+        var item = await FirebaseFirestore.instance
+            .collection("pocket_items")
+            .doc(listIds[i])
+            .get();
+        myItems.add(item.data());
+      }
+      for (var i = 0; i < myItems.length; i++) {
+        Map<String, dynamic> item = myItems[i];
+        backpack.add(Item(item["name"], item["effectValue"], item["type"],
+            item["imageUrl"], item["description"]));
+      }
     }
     return backpack;
   }
@@ -363,8 +365,6 @@ class CombatUtils {
     for (var i = 0; i < length; i++) {
       Pokemon pokemon = await CombatUtils().getRandomPokemon(level);
       randomTeam.add(pokemon);
-      print(pokemon.firstAttack);
-      print(pokemon.secondAttack);
     }
     return randomTeam;
   }

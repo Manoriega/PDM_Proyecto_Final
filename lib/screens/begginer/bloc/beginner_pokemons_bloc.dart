@@ -19,16 +19,13 @@ class BeginnerPokemonsBloc
 
   FutureOr<void> _pokemonIsEmpty(IsPokemonsEmptyEvent event, emit) async {
     try {
-      print("CheckingPokemons");
       var queryUser = await FirebaseFirestore.instance
           .collection('pocket_users')
           .doc(FirebaseAuth.instance.currentUser!.uid);
 
       var docsRef = await queryUser.get();
       dynamic test = docsRef.data()?["pokemons"];
-      print(test);
       var variable = docsRef.get('pokemons');
-      print(variable);
       List<dynamic> listIds = docsRef.data()?["pokemons"] as List;
       if (listIds.isEmpty)
         emit(ChoosePokemonsState());
@@ -61,7 +58,6 @@ class BeginnerPokemonsBloc
       });
       return _updateUserPokemons(pokemonID.id);
     } catch (e) {
-      print("Oh hell na spunchbob");
       return false;
     }
   }

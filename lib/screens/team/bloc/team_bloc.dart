@@ -32,10 +32,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
               .doc(FirebaseAuth.instance.currentUser!.uid),
           docsRef = await queryUser.get(),
           listIds = docsRef.data()?["pokemons"];
-
       var queryPokemons =
           await FirebaseFirestore.instance.collection("pokemon_users").get();
-
       var myTeamPokemons = queryPokemons.docs
           .where(
               (doc) => listIds.contains(doc.id) && doc.data()["onTeam"] == true)

@@ -183,10 +183,22 @@ class _SignInPageState extends State<SignInPage> {
       setState(() {
         isLoading = true;
       });
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password)
-          .then((user) => {createUser(users, user.user!.uid)})
-          .catchError((e) => print(e));
+      try {
+        await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password)
+            .then((user) => {createUser(users, user.user!.uid)})
+            .catchError((e) => print(e));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Something went wrong. Please try again."),
+          ),
+        );
+        passwordErrors = "Email possibly already exists. Please try again.";
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 

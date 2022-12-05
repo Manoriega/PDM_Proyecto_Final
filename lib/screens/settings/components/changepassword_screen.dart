@@ -2,6 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pokimon/components/error_text.dart';
 import 'package:pokimon/components/input.dart';
+import 'package:pokimon/components/loading_screen.dart';
+import 'package:pokimon/components/show_custom_dialog.dart';
+import 'package:pokimon/screens/settings/components/password_change_dialog.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -19,9 +22,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       validatePasswordErrors = "",
       checkErrors = "",
       formErrors = "",
-      acceptChange = false;
+      acceptChange = false,
+      loading = false;
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text('Change password'),
+          ),
+          body: Center(child: (CircularProgressIndicator())));
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -36,7 +47,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             style: Theme.of(context).textTheme.headline4,
           ),
           Input(context, true, false, false, lastPasswordController,
-              "Old password", lastPasswordErrors),
+              "Last password", lastPasswordErrors),
           Input(context, true, false, false, newPasswordController,
               "New password", newPasswordErrors),
           Input(context, true, false, false, validatePasswordController,
@@ -119,19 +130,39 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   void _changePassword(String currentPassword, String newPassword) async {
+    setState(() {
+      loading = true;
+    });
     final user = await FirebaseAuth.instance.currentUser;
     final _email = user?.email;
     final cred = EmailAuthProvider.credential(
         email: _email.toString(), password: currentPassword);
-
     user?.reauthenticateWithCredential(cred).then((value) {
       user.updatePassword(newPassword).then((_) {
-        //Success, do something
-        print("Les go");
+        setState(() {
+          loading = false;
+        });
+        ShowCustomDialog(context, PasswordChangedDialog());
       }).catchError((error) {
-        print(error);
-        //Error, show something
+        setState(() {
+          loading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Something went wrong. Please try again."),
+          ),
+        );
       });
-    }).catchError((err) {});
+    }).catchError((err) {
+      setState(() {
+        loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text("Last password doesn't match with your current password."),
+        ),
+      );
+    });
   }
 }
